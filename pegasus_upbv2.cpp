@@ -1,8 +1,6 @@
+//  Pegasus Ultimate power box v2 X2 plugin
 //
-//  nexdome.cpp
-//  Pegasus Ultimate power box X2 plugin
-//
-//  Created by Rodolphe Pineau on 3/11/2019.
+//  Created by Rodolphe Pineau on 2020/5/1
 
 
 #include "pegasus_upbv2.h"
