@@ -29,6 +29,7 @@
 #include "../../licensedinterfaces/sberrorx.h"
 #include "../../licensedinterfaces/serxinterface.h"
 #include "../../licensedinterfaces/loggerinterface.h"
+#include "../../licensedinterfaces/sleeperinterface.h"
 
 #define PLUGIN_DEBUG 2
 
@@ -145,6 +146,7 @@ public:
 
     void        SetSerxPointer(SerXInterface *p) { m_pSerx = p; };
     void        setLogger(LoggerInterface *pLogger) { m_pLogger = pLogger; };
+    void        setSleeper(SleeperInterface *pSleeper) { m_pSleeper = pSleeper;};
 
     // move commands
     int         haltFocuser();
@@ -156,7 +158,7 @@ public:
     int         isMotorMoving(bool &bMoving);
 
     // getter and setter
-    int         getStatus(int &nStatus);
+    int         getStatus();
     int         getStepperStatus(void);
     int         getConsolidatedStatus(void);
     int         getOnBootPowerState(void);
@@ -228,8 +230,9 @@ protected:
 
 
 
-    SerXInterface   *m_pSerx;
-    LoggerInterface *m_pLogger;
+    SerXInterface       *m_pSerx;
+    LoggerInterface     *m_pLogger;
+    SleeperInterface    *m_pSleeper;
 
     bool            m_bDebugLog;
     bool            m_bIsConnected;

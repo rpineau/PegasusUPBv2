@@ -33,6 +33,8 @@ X2Focuser::X2Focuser(const char* pszDisplayName,
     }
 	m_PegasusUPBv2.SetSerxPointer(m_pSerX);
 	m_PegasusUPBv2.setLogger(m_pLogger);
+    m_PegasusUPBv2.setSleeper(m_pSleeper);
+
 }
 
 X2Focuser::~X2Focuser()

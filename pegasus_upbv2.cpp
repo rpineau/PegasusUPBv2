@@ -19,7 +19,8 @@ CPegasusUPBv2::CPegasusUPBv2()
     
     m_pSerx = NULL;
     m_pLogger = NULL;
-
+    m_pSleeper = NULL;
+    
 
 #ifdef PLUGIN_DEBUG
 #if defined(SB_WIN_BUILD)
@@ -274,7 +275,7 @@ int CPegasusUPBv2::isMotorMoving(bool &bMoving)
 }
 
 #pragma mark getters and setters
-int CPegasusUPBv2::getStatus(int &nStatus)
+int CPegasusUPBv2::getStatus()
 {
     int nErr;
     char szResp[SERIAL_BUFFER_SIZE];
@@ -288,20 +289,17 @@ int CPegasusUPBv2::getStatus(int &nStatus)
         return nErr;
 
     if(strstr(szResp,"_OK")) {
-        if(strstr(szResp,"UPBv2")) {
+        if(strstr(szResp,"UPB2")) {
             m_globalStatus.nDeviceType = UPBv2;
         }
         else {
-            nStatus = UPB_BAD_CMD_RESPONSE;
             m_globalStatus.nDeviceType = NONE;
             return ERR_DEVICENOTSUPPORTED;
         }
-        nStatus = PLUGIN_OK;
         nErr = PLUGIN_OK;
     }
     else {
         nErr = COMMAND_FAILED;
-        nStatus = UPB_BAD_CMD_RESPONSE;
     }
     return nErr;
 }
@@ -929,12 +927,11 @@ int CPegasusUPBv2::syncMotorPosition(int nPos)
 int CPegasusUPBv2::getDeviceType(int &nDevice)
 {
     int nErr = PLUGIN_OK;
-    int nStatus;
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
 
-    nErr = getStatus(nStatus);
+    nErr = getStatus();
     nDevice = m_globalStatus.nDeviceType;
     
     return nErr;
