@@ -45,6 +45,7 @@ enum GetLedStatus   {OFF = 0, ON};
 enum SetLEdStatus   {SWITCH_OFF = 1, SWITCH_ON};
 enum MotorDir       {NORMAL = 0 , REVERSE};
 enum MotorStatus    {IDLE = 0, MOVING};
+enum DewHeaters     {DewHeaterA = 0, DewHeaterB, DewHeaterC};
 
 
 typedef struct {

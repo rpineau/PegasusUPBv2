@@ -338,34 +338,34 @@ int	X2Focuser::execModalSettingsDialog(void)
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPBv2.getPortCurrent(4));
         dx->setPropertyString("port4Draw","text", tmpBuf);
         
-        dx->setPropertyInt("dewHeaterA", "value", m_PegasusUPBv2.getDewHeaterPWM(1));
-        dx->setPropertyInt("dewHeaterB", "value", m_PegasusUPBv2.getDewHeaterPWM(2));
-        dx->setPropertyInt("dewHeaterC", "value", m_PegasusUPBv2.getDewHeaterPWM(2));
+        dx->setPropertyInt("dewHeaterA", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterA));
+        dx->setPropertyInt("dewHeaterB", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterB));
+        dx->setPropertyInt("dewHeaterC", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterC));
         
-        if(m_PegasusUPBv2.isAutoDewOn(1)) {
-            dx->setChecked("checkBox_9", false);
+        if(m_PegasusUPBv2.isAutoDewOn(DewHeaterA)) {
+            dx->setChecked("checkBox_9", true);
             dx->setEnabled("dewHeaterA", false);
         }
         else {
-            dx->setChecked("checkBox_9", true);
+            dx->setChecked("checkBox_9", false);
             dx->setEnabled("dewHeaterA", true);
         }
 
-        if(m_PegasusUPBv2.isAutoDewOn(2)) {
-            dx->setChecked("checkBox_10", false);
+        if(m_PegasusUPBv2.isAutoDewOn(DewHeaterB)) {
+            dx->setChecked("checkBox_10", true);
             dx->setEnabled("dewHeaterB", false);
         }
         else {
-            dx->setChecked("checkBox_10", true);
+            dx->setChecked("checkBox_10", false);
             dx->setEnabled("dewHeaterB", true);
         }
 
-        if(m_PegasusUPBv2.isAutoDewOn(3)) {
-            dx->setChecked("checkBox_11", false);
+        if(m_PegasusUPBv2.isAutoDewOn(DewHeaterC)) {
+            dx->setChecked("checkBox_11", true);
             dx->setEnabled("dewHeaterC", false);
         }
         else {
-            dx->setChecked("checkBox_11", true);
+            dx->setChecked("checkBox_11", false);
             dx->setEnabled("dewHeaterC", true);
         }
         
@@ -541,6 +541,10 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
 
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(3)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(3));
         uiex->setPropertyString("DewCDraw","text", tmpBuf);
+
+        uiex->setPropertyInt("dewHeaterA", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterA));
+        uiex->setPropertyInt("dewHeaterB", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterB));
+        uiex->setPropertyInt("dewHeaterC", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterC));
     }
     // max speed
     else if (!strcmp(pszEvent, "on_pushButton_clicked")) {
@@ -619,43 +623,49 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     // Set Dew A/B PWM and Auto Dew
     else if (!strcmp(pszEvent, "on_pushButton_3_clicked")) {
         uiex->propertyInt("dewHeaterA", "value", nTmpVal);
-        m_PegasusUPBv2.setDewHeaterPWM(1, nTmpVal);
+        m_PegasusUPBv2.setDewHeaterPWM(DewHeaterA, nTmpVal);
     }
     else if (!strcmp(pszEvent, "on_pushButton_4_clicked")) {
         uiex->propertyInt("dewHeaterB", "value", nTmpVal);
-        m_PegasusUPBv2.setDewHeaterPWM(2, nTmpVal);
+        m_PegasusUPBv2.setDewHeaterPWM(DewHeaterB, nTmpVal);
     }
     else if (!strcmp(pszEvent, "on_pushButton_5_clicked")) {
         uiex->propertyInt("dewHeaterC", "value", nTmpVal);
-        m_PegasusUPBv2.setDewHeaterPWM(3, nTmpVal);
+        m_PegasusUPBv2.setDewHeaterPWM(DewHeaterC, nTmpVal);
     }
     else if (!strcmp(pszEvent, "on_checkBox_9_stateChanged")) {
-        m_PegasusUPBv2.setAutoDewOn(1, uiex->isChecked("checkBox_9") == 0 ? false : true);
+        m_PegasusUPBv2.setAutoDewOn(DewHeaterA, uiex->isChecked("checkBox_9") == 0 ? false : true);
         if(uiex->isChecked("checkBox_9")) {
             uiex->setEnabled("dewHeaterA", 0);
+            uiex->setEnabled("pushButton_3", 0);
         }
         else {
             uiex->setEnabled("dewHeaterA", 1);
+            uiex->setEnabled("pushButton_3", 1);
         }
     }
 
     else if (!strcmp(pszEvent, "on_checkBox_10_stateChanged")) {
-        m_PegasusUPBv2.setAutoDewOn(2, uiex->isChecked("checkBox_10") == 0 ? false : true);
+        m_PegasusUPBv2.setAutoDewOn(DewHeaterB, uiex->isChecked("checkBox_10") == 0 ? false : true);
         if(uiex->isChecked("checkBox_10")) {
             uiex->setEnabled("dewHeaterB", 0);
+            uiex->setEnabled("pushButton_4", 0);
         }
         else {
             uiex->setEnabled("dewHeaterB", 1);
+            uiex->setEnabled("pushButton_4", 1);
         }
     }
 
     else if (!strcmp(pszEvent, "on_checkBox_11_stateChanged")) {
-        m_PegasusUPBv2.setAutoDewOn(3, uiex->isChecked("checkBox_11") == 0 ? false : true);
+        m_PegasusUPBv2.setAutoDewOn(DewHeaterC, uiex->isChecked("checkBox_11") == 0 ? false : true);
         if(uiex->isChecked("checkBox_11")) {
             uiex->setEnabled("dewHeaterC", 0);
+            uiex->setEnabled("pushButton_5", 0);
         }
         else {
             uiex->setEnabled("dewHeaterC", 1);
+            uiex->setEnabled("pushButton_5", 1);
         }
     }
 

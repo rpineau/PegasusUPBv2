@@ -485,12 +485,12 @@ int CPegasusUPBv2::getConsolidatedStatus()
     fflush(Logfile);
 #endif
     if(m_svParsedRespForPA[upbUsbStatus].size() == 6) {
-        m_globalStatus.bUsbPort1On = m_svParsedRespForPA[upbUsbStatus].at(0) == '1' ? false: true;
-        m_globalStatus.bUsbPort2On = m_svParsedRespForPA[upbUsbStatus].at(1) == '1' ? false: true;
-        m_globalStatus.bUsbPort3On = m_svParsedRespForPA[upbUsbStatus].at(2) == '1' ? false: true;
-        m_globalStatus.bUsbPort4On = m_svParsedRespForPA[upbUsbStatus].at(3) == '1' ? false: true;
-        m_globalStatus.bUsbPort5On = m_svParsedRespForPA[upbUsbStatus].at(4) == '1' ? false: true;
-        m_globalStatus.bUsbPort6On = m_svParsedRespForPA[upbUsbStatus].at(5) == '1' ? false: true;
+        m_globalStatus.bUsbPort1On = m_svParsedRespForPA[upbUsbStatus].at(0) == '1' ? true: false;
+        m_globalStatus.bUsbPort2On = m_svParsedRespForPA[upbUsbStatus].at(1) == '1' ? true: false;
+        m_globalStatus.bUsbPort3On = m_svParsedRespForPA[upbUsbStatus].at(2) == '1' ? true: false;
+        m_globalStatus.bUsbPort4On = m_svParsedRespForPA[upbUsbStatus].at(3) == '1' ? true: false;
+        m_globalStatus.bUsbPort5On = m_svParsedRespForPA[upbUsbStatus].at(4) == '1' ? true: false;
+        m_globalStatus.bUsbPort6On = m_svParsedRespForPA[upbUsbStatus].at(5) == '1' ? true: false;
 #ifdef PLUGIN_DEBUG
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
@@ -1081,19 +1081,19 @@ int CPegasusUPBv2::setPortOn(const int &nPortNumber, const bool &bEnabled)
 
     switch(nPortNumber) {
         case 1:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P1:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P1:%d\n", bEnabled?1:0);
             m_globalStatus.bPort1On = bEnabled;
             break;
         case 2:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P2:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P2:%d\n", bEnabled?1:0);
             m_globalStatus.bPort2On = bEnabled;
             break;
         case 3:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P3:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P3:%d\n", bEnabled?1:0);
             m_globalStatus.bPort3On = bEnabled;
             break;
         case 4:
-            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P4:%d", bEnabled?1:0);
+            snprintf(szCmd, SERIAL_BUFFER_SIZE, "P4:%d\n", bEnabled?1:0);
             m_globalStatus.bPort4On = bEnabled;
             break;
         default:
@@ -1228,15 +1228,15 @@ bool CPegasusUPBv2::isOverCurrentPort(const int &nPortNumber)
 bool CPegasusUPBv2::isOverCurrentDewHeater(const int &nPortNumber)
 {
     switch(nPortNumber) {
-        case 1:
+        case DewHeaterA:
             return m_globalStatus.bOverCurrentDew1;
             break;
 
-        case 2:
+        case DewHeaterB:
             return m_globalStatus.bOverCurrentDew2;
             break;
 
-        case 3:
+        case DewHeaterC:
             return m_globalStatus.bOverCurrentDew3;
             break;
 
@@ -1352,15 +1352,15 @@ int CPegasusUPBv2::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
     char szResp[SERIAL_BUFFER_SIZE];
 
     switch(nDewHeater) {
-        case 1:
+        case DewHeaterA:
             snprintf(szCmd, SERIAL_BUFFER_SIZE, "P5:%d\n", nPWM);
             m_globalStatus.nDew1PWM = nPWM;
             break;
-        case 2:
+        case DewHeaterB:
             snprintf(szCmd, SERIAL_BUFFER_SIZE, "P6:%d\n", nPWM);
             m_globalStatus.nDew2PWM = nPWM;
             break;
-        case 3:
+        case DewHeaterC:
             snprintf(szCmd, SERIAL_BUFFER_SIZE, "P7:%d\n", nPWM);
             m_globalStatus.nDew2PWM = nPWM;
             break;
@@ -1376,13 +1376,13 @@ int CPegasusUPBv2::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
 int CPegasusUPBv2::getDewHeaterPWM(const int &nDewHeater)
 {
     switch(nDewHeater) {
-        case 1:
+        case DewHeaterA:
             return m_globalStatus.nDew1PWM;
             break;
-        case 2:
+        case DewHeaterB:
             return m_globalStatus.nDew2PWM;
             break;
-        case 3:
+        case DewHeaterC:
             return m_globalStatus.nDew3PWM;
             break;
         default:
@@ -1394,13 +1394,13 @@ int CPegasusUPBv2::getDewHeaterPWM(const int &nDewHeater)
 float CPegasusUPBv2::getDewHeaterCurrent(const int &nDewHeater)
 {
     switch(nDewHeater) {
-        case 1:
+        case DewHeaterA:
             return m_globalStatus.fCurrentDew1;
             break;
-        case 2:
+        case DewHeaterB:
             return m_globalStatus.fCurrentDew2;
             break;
-        case 3:
+        case DewHeaterC:
             return m_globalStatus.fCurrentDew3;
             break;
         default:
@@ -1438,15 +1438,15 @@ int CPegasusUPBv2::setAutoDewOn(const int nPWMPort,const bool &bOn)
     int nAutoDewVal;
     
     switch(nPWMPort) {
-        case 1:
+        case DewHeaterA:
             m_globalStatus.bAutoDewCh1 = bOn;
             break;
 
-        case 2:
+        case DewHeaterB:
             m_globalStatus.bAutoDewCh2 = bOn ;
             break;
 
-        case 3:
+        case DewHeaterC:
             m_globalStatus.bAutoDewCh3 = bOn;
             break;
     }
@@ -1496,15 +1496,15 @@ bool CPegasusUPBv2::isAutoDewOn(const int nPWMPort)
 {
     bool bDewOn = false;
     switch(nPWMPort) {
-        case 1:
+        case DewHeaterA:
             bDewOn = m_globalStatus.bAutoDewCh1;
             break;
 
-        case 2:
+        case DewHeaterB:
             bDewOn = m_globalStatus.bAutoDewCh2;
             break;
 
-        case 3:
+        case DewHeaterC:
             bDewOn = m_globalStatus.bAutoDewCh3;
             break;
     }
