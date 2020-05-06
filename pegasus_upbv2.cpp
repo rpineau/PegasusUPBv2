@@ -634,8 +634,8 @@ int CPegasusUPBv2::getConsolidatedStatus()
     fflush(Logfile);
 #endif
 
-        // get port 8 volts settings.
-    
+    // get on boot port state and adjustable volts port settings.
+
 #ifdef PLUGIN_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
@@ -677,6 +677,7 @@ int CPegasusUPBv2::getOnBootPowerState()
         m_globalStatus.bOnBootPort2On = sParsedResp[1].at(1) == '1'? true : false;
         m_globalStatus.bOnBootPort3On = sParsedResp[1].at(2) == '1'? true : false;
         m_globalStatus.bOnBootPort4On = sParsedResp[1].at(3) == '1'? true : false;
+        m_globalStatus.nPort8Volts = std::stoi(sParsedResp[2]);
     }
 
 #ifdef PLUGIN_DEBUG
@@ -1412,25 +1413,9 @@ float CPegasusUPBv2::getDewHeaterCurrent(const int &nDewHeater)
 }
 
 
-int CPegasusUPBv2::getAdjPortVolts(int &nVolts)
+int CPegasusUPBv2::getAdjPortVolts()
 {
-    int nErr = PLUGIN_OK;
-    char szResp[SERIAL_BUFFER_SIZE];
-    std::vector<std::string> sResp;
-    
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return ERR_DEVICENOTSUPPORTED;
-    }
-    nErr = upbCommand("PU\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
-        return nErr;
-    
-    parseResp(szResp, sResp);
-    
-    if(sResp.size()>1)
-        nVolts = std::stoi(sResp[1]);
-
-    return nErr;
+    return m_globalStatus.nPort8Volts;
 }
 
 int CPegasusUPBv2::setAdjPortVolts(int nVolts)

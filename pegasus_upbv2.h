@@ -32,7 +32,7 @@
 
 #define PLUGIN_DEBUG 2
 
-#define DRIVER_VERSION      1.0
+#define DRIVER_VERSION      1.01
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000
@@ -89,7 +89,7 @@ typedef struct {
     float   fCurrentDew1;
     float   fCurrentDew2;
     float   fCurrentDew3;
-    float   fPort8Volts;
+    int     nPort8Volts;
     bool    bOverCurrentPort1;
     bool    bOverCurrentPort2;
     bool    bOverCurrentPort3;
@@ -213,7 +213,7 @@ public:
     int         getDewHeaterPWM(const int &nDewHeater);
     float       getDewHeaterCurrent(const int &nDewHeater);
     
-    int         getAdjPortVolts(int &nVolts);
+    int         getAdjPortVolts();
     int         setAdjPortVolts(int nVolts);
     
     int         setAutoDewOn(const int nPWMPort, const bool &bOn);

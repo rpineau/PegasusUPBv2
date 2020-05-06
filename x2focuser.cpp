@@ -324,7 +324,7 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setChecked("checkBox_8", m_PegasusUPBv2.getOnBootPortOn(4));
 
         // adjustable port
-        nErr = m_PegasusUPBv2.getAdjPortVolts(nTmpVal);
+        nTmpVal = m_PegasusUPBv2.getAdjPortVolts();
         dx->setPropertyInt("AdjPort", "value", nTmpVal);
         
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentPort(1)?"ff0000":"00ff00", m_PegasusUPBv2.getPortCurrent(1));
