@@ -224,7 +224,6 @@ int	X2Focuser::execModalSettingsDialog(void)
     bool bReverse = false;
     int nLedStatus;
     int nDeviceType = UPBv2;
-    bool bOn = false;
     int nTmpVal;
     
     if (NULL == ui)
@@ -292,8 +291,6 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setChecked("checkBox_17", m_PegasusUPBv2.getUsbPortState(4));
         dx->setChecked("checkBox_18", m_PegasusUPBv2.getUsbPortState(5));
         dx->setChecked("checkBox_19", m_PegasusUPBv2.getUsbPortState(6));
-        m_PegasusUPBv2.getUsbHubState(bOn);
-        dx->setChecked("checkBox_20", bOn);
 
         // Controller value
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "%3.2f V", m_PegasusUPBv2.getVoltage());
@@ -423,7 +420,6 @@ int	X2Focuser::execModalSettingsDialog(void)
         dx->setEnabled("checkBox_17", false);
         dx->setEnabled("checkBox_18", false);
         dx->setEnabled("checkBox_19", false);
-        dx->setEnabled("checkBox_20", false);
 
         dx->setEnabled("AdjPort", false);
         dx->setPropertyInt("AdjPort", "value", 12);
@@ -585,11 +581,8 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
     else if (!strcmp(pszEvent, "on_checkBox_19_stateChanged")) {
         uiex->isChecked("checkBox_19") == 1 ? m_PegasusUPBv2.setUsbPortState(6,true) : m_PegasusUPBv2.setUsbPortState(6,false);
     }
-    else if (!strcmp(pszEvent, "on_checkBox_20_stateChanged")) {
-        uiex->isChecked("checkBox_20") == 1 ? m_PegasusUPBv2.setUsbHubState(true) : m_PegasusUPBv2.setUsbHubState(false);
-    }
 
-        // port On/Off
+    // port On/Off
     else if (!strcmp(pszEvent, "on_checkBox_stateChanged")) {
         uiex->isChecked("checkBox") == 1 ? m_PegasusUPBv2.setPortOn(1, true) : m_PegasusUPBv2.setPortOn(1, false);
     }

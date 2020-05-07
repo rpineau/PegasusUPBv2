@@ -41,7 +41,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] build 2020_05_05_16_55.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] build 2020_05_06_09_35.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -1309,41 +1309,6 @@ bool CPegasusUPBv2::getUsbPortState(const int nPortID)
 
     return false;
 }
-
-int CPegasusUPBv2::setUsbHubState(const bool &bEnable)
-{
-    int nErr = PLUGIN_OK;
-    char szCmd[SERIAL_BUFFER_SIZE];
-    char szResp[SERIAL_BUFFER_SIZE];
-
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return ERR_DEVICENOTSUPPORTED;
-    }
-    snprintf(szCmd, SERIAL_BUFFER_SIZE, "PU:%s\n", bEnable?"1":"0");
-    nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
-    return nErr;
-}
-
-int CPegasusUPBv2::getUsbHubState(bool &bEnable)
-{
-    int nErr = PLUGIN_OK;
-    char szResp[SERIAL_BUFFER_SIZE];
-    std::vector<std::string> sResp;
-    
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return ERR_DEVICENOTSUPPORTED;
-    }
-    nErr = upbCommand("PU\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
-        return nErr;
-    
-    parseResp(szResp, sResp);
-    
-    if(sResp.size()>1)
-        bEnable = sResp[upbPortStatus].at(1) == '1'? true : false;
-    return nErr;
-}
-
 
 int CPegasusUPBv2::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
 {

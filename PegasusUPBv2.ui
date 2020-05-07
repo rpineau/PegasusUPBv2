@@ -74,7 +74,7 @@
        <property name="geometry">
         <rect>
          <x>16</x>
-         <y>224</y>
+         <y>216</y>
          <width>129</width>
          <height>24</height>
         </rect>
@@ -213,7 +213,7 @@
        <property name="geometry">
         <rect>
          <x>16</x>
-         <y>136</y>
+         <y>128</y>
          <width>232</width>
          <height>72</height>
         </rect>
@@ -761,7 +761,7 @@
         <x>280</x>
         <y>96</y>
         <width>377</width>
-        <height>153</height>
+        <height>120</height>
        </rect>
       </property>
       <property name="title">
@@ -770,7 +770,7 @@
       <widget class="QLabel" name="label_23">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>128</x>
          <y>24</y>
          <width>112</width>
          <height>24</height>
@@ -885,22 +885,6 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="label_30">
-       <property name="geometry">
-        <rect>
-         <x>136</x>
-         <y>112</y>
-         <width>80</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>USB  Hub :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="checkBox_14">
        <property name="geometry">
         <rect>
@@ -979,27 +963,14 @@
         <string/>
        </property>
       </widget>
-      <widget class="QCheckBox" name="checkBox_20">
-       <property name="geometry">
-        <rect>
-         <x>224</x>
-         <y>112</y>
-         <width>16</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
        <rect>
         <x>280</x>
-        <y>256</y>
+        <y>224</y>
         <width>377</width>
-        <height>104</height>
+        <height>136</height>
        </rect>
       </property>
       <property name="title">
@@ -1195,6 +1166,45 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_3">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>104</y>
+         <width>48</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>On</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioButton_4">
+       <property name="geometry">
+        <rect>
+         <x>184</x>
+         <y>104</y>
+         <width>48</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Off</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_30">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>104</y>
+         <width>96</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>LED indicator : </string>
        </property>
       </widget>
      </widget>
@@ -1424,45 +1434,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_7">
-      <property name="geometry">
-       <rect>
-        <x>488</x>
-        <y>368</y>
-        <width>168</width>
-        <height>64</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>LED Indicator</string>
-      </property>
-      <widget class="QRadioButton" name="radioButton_3">
-       <property name="geometry">
-        <rect>
-         <x>32</x>
-         <y>32</y>
-         <width>48</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>On</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioButton_4">
-       <property name="geometry">
-        <rect>
-         <x>96</x>
-         <y>32</y>
-         <width>48</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Off</string>
        </property>
       </widget>
      </widget>

@@ -31,9 +31,9 @@
 #include "../../licensedinterfaces/loggerinterface.h"
 #include "../../licensedinterfaces/sleeperinterface.h"
 
-#define PLUGIN_DEBUG 2
+// #define PLUGIN_DEBUG 2
 
-#define DRIVER_VERSION      1.01
+#define DRIVER_VERSION      1.02
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000
@@ -209,9 +209,6 @@ public:
     int         setUsbPortState(const int nPortID, const bool &bEnable);
     bool        getUsbPortState(const int nPortID);
     
-    int         setUsbHubState(const bool &bEnable);
-    int         getUsbHubState(bool &bEnable);
-
     int         setDewHeaterPWM(const int &nDewHeater, const int &nPWM);
     int         getDewHeaterPWM(const int &nDewHeater);
     float       getDewHeaterCurrent(const int &nDewHeater);
