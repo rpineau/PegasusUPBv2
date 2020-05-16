@@ -1,0 +1,54 @@
+#!/bin/bash
+
+TheSkyX_Install=~/Library/Application\ Support/Software\ Bisque/TheSkyX\ Professional\ Edition/TheSkyXInstallPath.txt
+echo "TheSkyX_Install = $TheSkyX_Install"
+
+if [ ! -f "$TheSkyX_Install" ]; then
+    echo TheSkyXInstallPath.txt not found
+    exit 1
+fi
+
+
+TheSkyX_Path=$(<"$TheSkyX_Install")
+echo "Installing to $TheSkyX_Path"
+
+if [ ! -d "$TheSkyX_Path" ]; then
+    echo "Coudln't find TheSkyX application location"
+    exit 1
+fi
+
+if [ -d "$TheSkyX_Path/PlugIns" ]; then
+	PLUGINS_DIR="$TheSkyX_Path/PlugIns"
+elif [ -d "$TheSkyX_Path/Resources/Common/PlugIns64" ]; then
+	PLUGINS_DIR="$TheSkyX_Path/Resources/Common/PlugIns64"
+else
+	PLUGINS_DIR="$TheSkyX_Path/Resources/Common/PlugIns"
+fi
+
+echo "Installing in $PLUGINS_DIR/FocuserPlugIns/"
+
+cp "/tmp/PegasusUPBv2_X2/focuserlist PegasusUPBv2.txt" "$TheSkyX_Path/Resources/Common/Miscellaneous Files/"
+if [ "$?" -ne "0" ]; then exit 1; fi
+
+rm -f "$PLUGINS_DIR/FocuserPlugIns/PegasusUPBv2.ui"
+cp "/tmp/PegasusUPBv2_X2/PegasusUPBv2.ui" "$PLUGINS_DIR/FocuserPlugIns/"
+if [ "$?" -ne "0" ]; then exit 1; fi
+
+rm -f "$PLUGINS_DIR/FocuserPlugIns/PegasusAstro.png"
+cp "/tmp/PegasusUPBv2_X2/PegasusAstro.png" "$PLUGINS_DIR/FocuserPlugIns/"
+if [ "$?" -ne "0" ]; then exit 1; fi
+
+rm -f "$PLUGINS_DIR/FocuserPlugIns/libPegasusUPBv2.dylib"
+cp "/tmp/PegasusUPBv2_X2/libPegasusUPBv2.dylib" "$PLUGINS_DIR/FocuserPlugIns/"
+if [ "$?" -ne "0" ]; then exit 1; fi
+
+app_owner=`/usr/bin/stat -n -f "%u" "$TheSkyX_Path" | xargs id -n -u`
+if [ ! -z "$app_owner" ]; then
+	chown $app_owner "$TheSkyX_Path/Resources/Common/Miscellaneous Files/focuserlist PegasusUPBv2.txt"
+	chown $app_owner "$PLUGINS_DIR/FocuserPlugIns/PegasusUPBv2.ui"
+	chown $app_owner "$PLUGINS_DIR/FocuserPlugIns/PegasusAstro.png"
+	chown $app_owner "$PLUGINS_DIR/FocuserPlugIns/libPegasusUPBv2.dylib"
+fi
+
+rm -rf /tmp/PegasusUPBv2_X2
+
