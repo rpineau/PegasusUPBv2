@@ -41,7 +41,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] build 2020_05_16_11_10.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] version %3.2f build 2020_05_16_11_10.\n", timestamp, DRIVER_VERSION);
     fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -143,11 +143,12 @@ void CPegasusUPBv2::Disconnect()
 int CPegasusUPBv2::haltFocuser()
 {
     int nErr = PLUGIN_OK;
-
+    char szResp[SERIAL_BUFFER_SIZE];
+    
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
     
-    nErr = upbCommand("SH\n", NULL, 0);
+    nErr = upbCommand("SH\n", szResp, 0);
 	m_bAbborted = true;
 	
 	return nErr;
@@ -157,6 +158,7 @@ int CPegasusUPBv2::gotoPosition(int nPos)
 {
     int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
@@ -173,7 +175,7 @@ int CPegasusUPBv2::gotoPosition(int nPos)
 #endif
 
     sprintf(szCmd,"SM:%d\n", nPos);
-    nErr = upbCommand(szCmd, NULL, 0);
+    nErr = upbCommand(szCmd, szResp, 0);
     m_nTargetPos = nPos;
 
     return nErr;
@@ -712,12 +714,13 @@ int CPegasusUPBv2::setMotoMaxSpeed(int nSpeed)
 {
     int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
+    char szResp[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
     sprintf(szCmd,"SS:%d\n", nSpeed);
-    nErr = upbCommand(szCmd, NULL, 0);
+    nErr = upbCommand(szCmd, szResp, 0);
 
     return nErr;
 }
@@ -855,7 +858,8 @@ int CPegasusUPBv2::setLedStatus(int nStatus)
 {
     int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
-	
+    char szResp[SERIAL_BUFFER_SIZE];
+
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
@@ -870,7 +874,7 @@ int CPegasusUPBv2::setLedStatus(int nStatus)
         default:
             break;
     }
-    nErr = upbCommand(szCmd, NULL, 0);
+    nErr = upbCommand(szCmd, szResp, 0);
 
     return nErr;
 }
@@ -879,12 +883,13 @@ int CPegasusUPBv2::syncMotorPosition(int nPos)
 {
     int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
-	
+    char szResp[SERIAL_BUFFER_SIZE];
+
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "SC:%d\n", nPos);
-    nErr = upbCommand(szCmd, NULL, 0);
+    nErr = upbCommand(szCmd, szResp, 0);
     return nErr;
 }
 
