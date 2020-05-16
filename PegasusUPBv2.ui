@@ -1197,14 +1197,17 @@
       <widget class="QLabel" name="label_30">
        <property name="geometry">
         <rect>
-         <x>16</x>
+         <x>8</x>
          <y>104</y>
-         <width>88</width>
+         <width>96</width>
          <height>24</height>
         </rect>
        </property>
        <property name="text">
         <string>LED indicator : </string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </widget>

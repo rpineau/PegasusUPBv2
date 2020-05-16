@@ -31,9 +31,9 @@
 #include "../../licensedinterfaces/loggerinterface.h"
 #include "../../licensedinterfaces/sleeperinterface.h"
 
-// #define PLUGIN_DEBUG 2
+#define PLUGIN_DEBUG 2
 
-#define DRIVER_VERSION      1.02
+#define DRIVER_VERSION      1.04
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000

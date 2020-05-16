@@ -41,7 +41,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] build 2020_05_06_09_35.\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] build 2020_05_16_11_10.\n", timestamp);
     fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -147,9 +147,6 @@ int CPegasusUPBv2::haltFocuser()
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
     
-    if(m_globalStatus.nDeviceType != UPBv2)
-        return nErr;
-
     nErr = upbCommand("SH\n", NULL, 0);
 	m_bAbborted = true;
 	
@@ -163,11 +160,6 @@ int CPegasusUPBv2::gotoPosition(int nPos)
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_nTargetPos = nPos;
-        return nErr;
-    }
     
     if (m_bPosLimitEnabled && nPos>m_nPosLimit)
         return ERR_LIMITSEXCEEDED;
@@ -190,15 +182,10 @@ int CPegasusUPBv2::gotoPosition(int nPos)
 int CPegasusUPBv2::moveRelativeToPosision(int nSteps)
 {
     int nErr = PLUGIN_OK;
-    char szCmd[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
-        return nErr;
-    }
 
 #ifdef PLUGIN_DEBUG
     ltime = time(NULL);
@@ -210,9 +197,8 @@ int CPegasusUPBv2::moveRelativeToPosision(int nSteps)
 
     m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
 
-    sprintf(szCmd,"SG:%d\n", nSteps);
-    nErr = upbCommand(szCmd, NULL, 0);
-
+    nErr = gotoPosition(m_nTargetPos);
+    
     return nErr;
 }
 
@@ -221,17 +207,25 @@ int CPegasusUPBv2::moveRelativeToPosision(int nSteps)
 int CPegasusUPBv2::isGoToComplete(bool &bComplete)
 {
     int nErr = PLUGIN_OK;
-	
+    bool bIsMoving;
+    
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.nCurPos = m_nTargetPos;
-        bComplete = true;
-        return nErr;
-    }
 
-    getPosition(m_globalStatus.focuser.nCurPos);
+    nErr = getPosition(m_globalStatus.focuser.nCurPos);
+    nErr |= isMotorMoving(bIsMoving);
+    
+    #ifdef PLUGIN_DEBUG
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] motor is moving ? : %s\n", timestamp, bIsMoving?"Yes":"No");
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
+        fflush(Logfile);
+    #endif
+
 	if(m_bAbborted) {
 		bComplete = true;
 		m_nTargetPos = m_globalStatus.focuser.nCurPos;
@@ -251,12 +245,6 @@ int CPegasusUPBv2::isMotorMoving(bool &bMoving)
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-	
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.bMoving = IDLE;
-        bMoving = false;
-        return nErr;
-    }
 
     nErr = upbCommand("SI\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -311,14 +299,6 @@ int CPegasusUPBv2::getStepperStatus()
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
-
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.nCurPos = 0;
-        m_globalStatus.focuser.bMoving = false;
-        m_globalStatus.focuser.bReverse = false;
-        m_globalStatus.focuser.nBacklash = 0;
-        return nErr;
-    }
 
     nErr = upbCommand("SA\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -450,9 +430,19 @@ int CPegasusUPBv2::getConsolidatedStatus()
     m_globalStatus.fVoltage = std::stof(m_svParsedRespForPA[upbVoltage]);
     m_globalStatus.fCurent = std::stof(m_svParsedRespForPA[upbCurrent]);
     m_globalStatus.nPower = std::stoi(m_svParsedRespForPA[upbPower]);
-    m_globalStatus.fTemp = std::stof(m_svParsedRespForPA[upbTemp]);
+    if (m_svParsedRespForPA[upbTemp].find("nan") == -1) {
+        m_globalStatus.fTemp = std::stof(m_svParsedRespForPA[upbTemp]);
+    }
+    else
+        m_globalStatus.fTemp = -100.0f;
+
     m_globalStatus.nHumidity = std::stoi(m_svParsedRespForPA[upbHumidity]);
-    m_globalStatus.fDewPoint = std::stof(m_svParsedRespForPA[upbDewPoint]);
+
+    if (m_svParsedRespForPA[upbDewPoint].find("nan") == -1) {
+        m_globalStatus.fDewPoint = std::stof(m_svParsedRespForPA[upbDewPoint]);
+    }
+    else
+        m_globalStatus.fDewPoint = -273.15f;
 
 #ifdef PLUGIN_DEBUG
     ltime = time(NULL);
@@ -700,11 +690,6 @@ int CPegasusUPBv2::getMotoMaxSpeed(int &nSpeed)
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        nSpeed = 500;   // random value
-        return nErr;
-    }
     
     nErr = upbCommand("SS\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -731,10 +716,6 @@ int CPegasusUPBv2::setMotoMaxSpeed(int nSpeed)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return nErr;
-    }
-
     sprintf(szCmd,"SS:%d\n", nSpeed);
     nErr = upbCommand(szCmd, NULL, 0);
 
@@ -748,11 +729,6 @@ int CPegasusUPBv2::getBacklashComp(int &nSteps)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 	
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        nSteps = 0;
-        return nErr;
-    }
-
     nErr = getStepperStatus();
     nSteps = m_globalStatus.focuser.nBacklash;
 
@@ -768,16 +744,11 @@ int CPegasusUPBv2::setBacklashComp(int nSteps)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.nBacklash = nSteps;
-        return nErr;
-    }
-
 #ifdef PLUGIN_DEBUG
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] CPegasusUPBv2::setBacklashComp setting backlash comp\n", timestamp);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::setBacklashComp] setting backlash comp\n", timestamp);
     fflush(Logfile);
 #endif
 
@@ -797,9 +768,6 @@ int CPegasusUPBv2::getFirmwareVersion(char *pszVersion, int nStrMaxLen)
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-
-    if(!m_bIsConnected)
-        return NOT_CONNECTED;
 
     nErr = upbCommand("PV\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -915,10 +883,6 @@ int CPegasusUPBv2::syncMotorPosition(int nPos)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.nCurPos = nPos;
-        return nErr;
-    }
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "SC:%d\n", nPos);
     nErr = upbCommand(szCmd, NULL, 0);
     return nErr;
@@ -967,11 +931,6 @@ int CPegasusUPBv2::setReverseEnable(bool bEnabled)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        m_globalStatus.focuser.bReverse = bEnabled;
-        return nErr;
-    }
-    
     if(bEnabled)
         sprintf(szCmd,"SR:%d\n", REVERSE);
     else
@@ -981,7 +940,7 @@ int CPegasusUPBv2::setReverseEnable(bool bEnabled)
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] CPegasusUPBv2::setReverseEnable setting reverse : %s\n", timestamp, szCmd);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::setReverseEnable] setting reverse : %s\n", timestamp, szCmd);
     fflush(Logfile);
 #endif
 
@@ -992,7 +951,7 @@ int CPegasusUPBv2::setReverseEnable(bool bEnabled)
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] CPegasusUPBv2::setReverseEnable **** ERROR **** setting reverse (\"%s\") : %d\n", timestamp, szCmd, nErr);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::setReverseEnable] **** ERROR **** setting reverse (\"%s\") : %d\n", timestamp, szCmd, nErr);
         fflush(Logfile);
     }
 #endif
@@ -1007,10 +966,6 @@ int CPegasusUPBv2::getReverseEnable(bool &bEnabled)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        bEnabled = m_globalStatus.focuser.bReverse;
-        return nErr;
-    }
     nErr = getStepperStatus();
     bEnabled = m_globalStatus.focuser.bReverse;
 
@@ -1253,9 +1208,6 @@ int CPegasusUPBv2::setUsbPortState(const int nPortID, const bool &bEnable)
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return ERR_DEVICENOTSUPPORTED;
-    }
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "U%d:%s\n", nPortID, bEnable?"1":"0");
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -1386,9 +1338,6 @@ int CPegasusUPBv2::setAdjPortVolts(int nVolts)
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        return ERR_DEVICENOTSUPPORTED;
-    }
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "P8:%d\n", nVolts);
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
     return nErr;
@@ -1449,8 +1398,8 @@ int CPegasusUPBv2::setAutoDewOn(const int nPWMPort,const bool &bOn)
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] CPegasusUPBv2::setAutoDewOn  nPWMPort %d : %s\n", timestamp, nPWMPort, bOn?"Yes":"No");
-    fprintf(Logfile, "[%s] CPegasusUPBv2::setAutoDewOn  nAutoDewVal : %d \n", timestamp, nAutoDewVal);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::setAutoDewOn]  nPWMPort %d : %s\n", timestamp, nPWMPort, bOn?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::setAutoDewOn]  nAutoDewVal : %d \n", timestamp, nAutoDewVal);
     fflush(Logfile);
 #endif
     return nErr;
@@ -1477,7 +1426,7 @@ bool CPegasusUPBv2::isAutoDewOn(const int nPWMPort)
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] CPegasusUPBv2::isAutoDewOn  for port %d : %s\n", timestamp, nPWMPort,  bDewOn?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isAutoDewOn]  for port %d : %s\n", timestamp, nPWMPort,  bDewOn?"Yes":"No");
     fflush(Logfile);
 #endif
     return bDewOn;
@@ -1501,7 +1450,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPBv2::upbCommand Sending %s\n", timestamp, pszszCmd);
+	fprintf(Logfile, "[%s] [CPegasusUPBv2::upbCommand] Sending %s\n", timestamp, pszszCmd);
 	fflush(Logfile);
 #endif
     nErr = m_pSerx->writeFile((void *)pszszCmd, strlen(pszszCmd), ulBytesWrite);
@@ -1522,7 +1471,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
 		timestamp[strlen(timestamp) - 1] = 0;
-		fprintf(Logfile, "[%s] CPegasusUPBv2::upbCommand response \"%s\"\n", timestamp, szResp);
+		fprintf(Logfile, "[%s] [CPegasusUPBv2::upbCommand] response \"%s\"\n", timestamp, szResp);
 		fflush(Logfile);
 #endif
         // printf("Got response : %s\n",resp);
@@ -1531,7 +1480,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
 		timestamp[strlen(timestamp) - 1] = 0;
-		fprintf(Logfile, "[%s] CPegasusUPBv2::upbCommand response copied to pszResult : \"%s\"\n", timestamp, pszResult);
+		fprintf(Logfile, "[%s] [CPegasusUPBv2::upbCommand] response copied to pszResult : \"%s\"\n", timestamp, pszResult);
 		fflush(Logfile);
 #endif
     }
@@ -1562,7 +1511,7 @@ int CPegasusUPBv2::readResponse(char *pszRespBuffer, unsigned long nBufferLen)
 			ltime = time(NULL);
 			timestamp = asctime(localtime(&ltime));
 			timestamp[strlen(timestamp) - 1] = 0;
-			fprintf(Logfile, "[%s] CPegasusUPBv2::readResponse timeout\n", timestamp);
+			fprintf(Logfile, "[%s] [CPegasusUPBv2::readResponse] timeout\n", timestamp);
 			fflush(Logfile);
 #endif
             nErr = ERR_NORESPONSE;
@@ -1588,7 +1537,7 @@ void CPegasusUPBv2::parseResp(char *pszResp, std::vector<std::string>  &svParsed
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPBv2::parseResp parsing \"%s\"\n", timestamp, pszResp);
+	fprintf(Logfile, "[%s] [CPegasusUPBv2::parseResp] parsing \"%s\"\n", timestamp, pszResp);
 	fflush(Logfile);
 #endif
 	svParsedResp.clear();
@@ -1600,7 +1549,7 @@ void CPegasusUPBv2::parseResp(char *pszResp, std::vector<std::string>  &svParsed
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] CPegasusUPBv2::parseResp sSegment : %s\n", timestamp, sSegment.c_str());
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::parseResp] sSegment : %s\n", timestamp, sSegment.c_str());
         fflush(Logfile);
 #endif
     }
