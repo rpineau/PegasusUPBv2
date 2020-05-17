@@ -114,7 +114,7 @@ void X2Focuser::deviceInfoNameShort(BasicStringInterface& str) const
         pMe->m_PegasusUPBv2.getDeviceType(deviceType);
 
         if(deviceType == UPBv2)
-            str = "Ultimate Power Box";
+            str = "Ultimate Power Box V2";
         else
             str = "Unknown device";
     }
@@ -127,7 +127,7 @@ void X2Focuser::deviceInfoNameLong(BasicStringInterface& str) const
 
 void X2Focuser::deviceInfoDetailedDescription(BasicStringInterface& str) const		
 {
-	str = "Pegasus Focus Controller";
+	str = "Ultimate Power Box V2";
 }
 
 void X2Focuser::deviceInfoFirmwareVersion(BasicStringInterface& str)				
@@ -158,7 +158,7 @@ void X2Focuser::deviceInfoModel(BasicStringInterface& str)
 
         m_PegasusUPBv2.getDeviceType(deviceType);
         if(deviceType == UPBv2)
-            str = "Ultimate Power Box";
+            str = "Ultimate Power Box V2";
         else
             str = "Unknown device";
     }
