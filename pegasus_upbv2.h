@@ -33,7 +33,7 @@
 
 // #define PLUGIN_DEBUG 2
 
-#define DRIVER_VERSION      1.05
+#define DRIVER_VERSION      1.06
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000
@@ -42,7 +42,7 @@
 enum DMFC_Errors    {PLUGIN_OK = 0, NOT_CONNECTED, ND_CANT_CONNECT, UPB_BAD_CMD_RESPONSE, COMMAND_FAILED};
 enum DeviceType     {NONE = 0, UPBv2};
 enum GetLedStatus   {OFF = 0, ON};
-enum SetLEdStatus   {SWITCH_OFF = 1, SWITCH_ON};
+enum SetLEdStatus   {SWITCH_OFF = 0, SWITCH_ON};
 enum MotorDir       {NORMAL = 0 , REVERSE};
 enum MotorStatus    {IDLE = 0, MOVING};
 enum DewHeaters     {DewHeaterA = 0, DewHeaterB, DewHeaterC};
