@@ -214,15 +214,28 @@ int CPegasusUPBv2::isGoToComplete(bool &bComplete)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-
-    nErr = getPosition(m_globalStatus.focuser.nCurPos);
-    nErr |= isMotorMoving(bIsMoving);
+    bComplete = false;
+    nErr = isMotorMoving(bIsMoving);
     
     #ifdef PLUGIN_DEBUG
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
         fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] motor is moving ? : %s\n", timestamp, bIsMoving?"Yes":"No");
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
+        fflush(Logfile);
+    #endif
+
+    if(bIsMoving) {
+        return nErr;
+    }
+    nErr = getPosition(m_globalStatus.focuser.nCurPos);
+
+    #ifdef PLUGIN_DEBUG
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
         fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
         fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
         fflush(Logfile);
@@ -809,11 +822,6 @@ int CPegasusUPBv2::getPosition(int &nPosition)
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
-
-    if(m_globalStatus.nDeviceType != UPBv2) {
-        nPosition = m_globalStatus.focuser.nCurPos;
-        return nErr;
-    }
 
     nErr = upbCommand("SP\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
