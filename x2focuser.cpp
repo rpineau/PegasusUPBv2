@@ -366,11 +366,14 @@ int	X2Focuser::execModalSettingsDialog(void)
             dx->setEnabled("dewHeaterC", true);
         }
         
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(1));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterA));
         dx->setPropertyString("DewADraw","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(2));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterB));
         dx->setPropertyString("DewBDraw","text", tmpBuf);
+
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterC));
+        dx->setPropertyString("DewCDraw","text", tmpBuf);
 
         // LED
         m_PegasusUPBv2.getLedStatus(nLedStatus);
@@ -529,13 +532,13 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentPort(4)?"ff0000":"00ff00", m_PegasusUPBv2.getPortCurrent(4));
         uiex->setPropertyString("port4Draw","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(1));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(1)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterA));
         uiex->setPropertyString("DewADraw","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(2));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(2)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterB));
         uiex->setPropertyString("DewBDraw","text", tmpBuf);
 
-        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(3)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(3));
+        snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(3)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterC));
         uiex->setPropertyString("DewCDraw","text", tmpBuf);
 
         uiex->setPropertyInt("dewHeaterA", "value", m_PegasusUPBv2.getDewHeaterPWM(DewHeaterA));

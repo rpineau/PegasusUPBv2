@@ -41,7 +41,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] version %3.2f build 2020_05_16_13_00.\n", timestamp, DRIVER_VERSION);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] version %3.2f build 2020_07_30_1950.\n", timestamp, DRIVER_VERSION);
     fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -1546,7 +1546,7 @@ void CPegasusUPBv2::parseResp(char *pszResp, std::vector<std::string>  &svParsed
     std::vector<std::string> svSeglist;
     std::stringstream ssTmp(pszResp);
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 3
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -1558,7 +1558,7 @@ void CPegasusUPBv2::parseResp(char *pszResp, std::vector<std::string>  &svParsed
     while(std::getline(ssTmp, sSegment, ':'))
     {
         svSeglist.push_back(sSegment);
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 3
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
