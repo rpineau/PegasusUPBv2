@@ -10,7 +10,7 @@ CPegasusUPBv2::CPegasusUPBv2()
 {
     m_globalStatus.nDeviceType = NONE;
     m_globalStatus.bReady = false;
-    memset(m_globalStatus.szVersion,0,TEXT_BUFFER_SIZE);
+    memset(m_globalStatus.szVersion,0,sizeof(upbStatus));
 
     m_nTargetPos = 0;
     m_nPosLimit = 0;

@@ -33,7 +33,7 @@
 
 // #define PLUGIN_DEBUG 2
 
-#define DRIVER_VERSION      1.1
+#define DRIVER_VERSION      1.11
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000
