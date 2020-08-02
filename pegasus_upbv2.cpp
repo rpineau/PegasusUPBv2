@@ -22,7 +22,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     m_pSleeper = NULL;
     
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 #if defined(SB_WIN_BUILD)
     m_sLogfilePath = getenv("HOMEDRIVE");
     m_sLogfilePath += getenv("HOMEPATH");
@@ -41,7 +41,7 @@ CPegasusUPBv2::CPegasusUPBv2()
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] version %3.2f build 2020_07_30_1950.\n", timestamp, DRIVER_VERSION);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] version %3.2f build 2020_08_01_1800.\n", timestamp, DRIVER_VERSION);
     fprintf(Logfile, "[%s] [CPegasusUPBv2::CPegasusUPBv2] Constructor Called.\n", timestamp);
     fflush(Logfile);
 #endif
@@ -50,7 +50,7 @@ CPegasusUPBv2::CPegasusUPBv2()
 
 CPegasusUPBv2::~CPegasusUPBv2()
 {
-#ifdef	PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	// Close LogFile
 	if (Logfile) fclose(Logfile);
 #endif
@@ -64,7 +64,7 @@ int CPegasusUPBv2::Connect(const char *pszPort)
     if(!m_pSerx)
         return ERR_COMMNOLINK;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -82,7 +82,9 @@ int CPegasusUPBv2::Connect(const char *pszPort)
     if(!m_bIsConnected)
         return nErr;
 
-#ifdef PLUGIN_DEBUG
+    m_pSleeper->sleep(1500);
+    
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -91,7 +93,7 @@ int CPegasusUPBv2::Connect(const char *pszPort)
 #endif
 	
     // get status so we can figure out what device we are connecting to.
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -105,7 +107,7 @@ int CPegasusUPBv2::Connect(const char *pszPort)
             m_bIsConnected = false;
             nErr = ERR_DEVICENOTSUPPORTED;
         }
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
 		timestamp[strlen(timestamp) - 1] = 0;
@@ -119,7 +121,7 @@ int CPegasusUPBv2::Connect(const char *pszPort)
     if(nErr) {
         m_pSerx->close();
         m_bIsConnected = false;
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -166,7 +168,7 @@ int CPegasusUPBv2::gotoPosition(int nPos)
     if (m_bPosLimitEnabled && nPos>m_nPosLimit)
         return ERR_LIMITSEXCEEDED;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -189,7 +191,7 @@ int CPegasusUPBv2::moveRelativeToPosision(int nSteps)
 		return ERR_COMMNOLINK;
 
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -217,29 +219,29 @@ int CPegasusUPBv2::isGoToComplete(bool &bComplete)
     bComplete = false;
     nErr = isMotorMoving(bIsMoving);
     
-    #ifdef PLUGIN_DEBUG
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] motor is moving ? : %s\n", timestamp, bIsMoving?"Yes":"No");
-        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
-        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
-        fflush(Logfile);
-    #endif
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] motor is moving ? : %s\n", timestamp, bIsMoving?"Yes":"No");
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
+    fflush(Logfile);
+#endif
 
     if(bIsMoving) {
         return nErr;
     }
     nErr = getPosition(m_globalStatus.focuser.nCurPos);
 
-    #ifdef PLUGIN_DEBUG
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
-        fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
-        fflush(Logfile);
-    #endif
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    ltime = time(NULL);
+    timestamp = asctime(localtime(&ltime));
+    timestamp[strlen(timestamp) - 1] = 0;
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] current position  : %d\n", timestamp, m_globalStatus.focuser.nCurPos);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2::isGoToComplete] target position   : %d\n", timestamp, m_nTargetPos);
+    fflush(Logfile);
+#endif
 
 	if(m_bAbborted) {
 		bComplete = true;
@@ -322,7 +324,7 @@ int CPegasusUPBv2::getStepperStatus()
     // parse results.
     parseResp(szResp, m_svParsedRespForSA);
     if(m_svParsedRespForSA.size()<4) {
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -336,7 +338,7 @@ int CPegasusUPBv2::getStepperStatus()
     m_globalStatus.focuser.bReverse = std::stoi(m_svParsedRespForSA[upbFMotorInvert] )== 1?true:false;
     m_globalStatus.focuser.nBacklash = std::stoi(m_svParsedRespForSA[upbFBacklash]);
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -365,7 +367,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
 
     nErr = upbCommand("PA\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr) {
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -375,7 +377,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
         return nErr;
     }
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -386,7 +388,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
     // parse response
     parseResp(szResp, m_svParsedRespForPA);
     if(nErr) {
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -395,7 +397,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
 #endif
         return nErr;
     }
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -404,7 +406,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
 #endif
 
     if(m_svParsedRespForPA.size()<18) {
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -414,30 +416,17 @@ int CPegasusUPBv2::getConsolidatedStatus()
         return UPB_BAD_CMD_RESPONSE;
     }
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] converting value and setting them in m_globalStatus\n", timestamp);
-    fflush(Logfile);
-#endif
-
-#ifdef PLUGIN_DEBUG
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbDevice] = %s \n", timestamp, m_svParsedRespForPA[upbDevice].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbVoltage] = %s \n", timestamp, m_svParsedRespForPA[upbVoltage].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbCurrent] = %s \n", timestamp, m_svParsedRespForPA[upbCurrent].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbPower] = %s \n", timestamp, m_svParsedRespForPA[upbPower].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbTemp] = %s \n", timestamp, m_svParsedRespForPA[upbTemp].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbHumidity] = %s \n", timestamp, m_svParsedRespForPA[upbHumidity].c_str());
-    fflush(Logfile);
     fprintf(Logfile, "[%s][CPegasusUPBv2::getConsolidatedStatus] m_svParsedRespForPA[upbDewPoint] = %s \n", timestamp, m_svParsedRespForPA[upbDewPoint].c_str());
     fflush(Logfile);
 #endif
@@ -459,7 +448,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
     else
         m_globalStatus.fDewPoint = -273.15f;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -478,7 +467,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
     m_globalStatus.bPort3On = m_svParsedRespForPA[upbPortStatus].at(2) == '1'? true : false;
     m_globalStatus.bPort4On = m_svParsedRespForPA[upbPortStatus].at(3) == '1'? true : false;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -496,7 +485,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
         m_globalStatus.bUsbPort4On = m_svParsedRespForPA[upbUsbStatus].at(3) == '1' ? true: false;
         m_globalStatus.bUsbPort5On = m_svParsedRespForPA[upbUsbStatus].at(4) == '1' ? true: false;
         m_globalStatus.bUsbPort6On = m_svParsedRespForPA[upbUsbStatus].at(5) == '1' ? true: false;
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -536,7 +525,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
     m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2])/480;
     m_globalStatus.fCurrentDew3 = std::stof(m_svParsedRespForPA[upbCurrentDew3])/700;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -562,7 +551,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
     m_globalStatus.bOverCurrentDew2 = m_svParsedRespForPA[upbOvercurent].at(5) == '1'? true : false;
     m_globalStatus.bOverCurrentDew3 = m_svParsedRespForPA[upbOvercurent].at(6) == '1'? true : false;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -627,7 +616,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
             break;
     }
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -639,7 +628,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
 
     // get on boot port state and adjustable volts port settings.
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -649,7 +638,7 @@ int CPegasusUPBv2::getConsolidatedStatus()
 
     nErr = getOnBootPowerState();
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -683,7 +672,7 @@ int CPegasusUPBv2::getOnBootPowerState()
         m_globalStatus.nPort8Volts = std::stoi(sParsedResp[2]);
     }
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -712,7 +701,7 @@ int CPegasusUPBv2::getMotoMaxSpeed(int &nSpeed)
 
     // parse response
     nSpeed = atoi(szResp);
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -760,7 +749,7 @@ int CPegasusUPBv2::setBacklashComp(int nSteps)
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -824,9 +813,16 @@ int CPegasusUPBv2::getPosition(int &nPosition)
 		return ERR_COMMNOLINK;
 
     nErr = upbCommand("SP\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
-        return nErr;
-
+    if(nErr) {
+    #if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] [CPegasusUPBv2::getPosition] Error getting position : %d\n", timestamp, nErr);
+        fflush(Logfile);
+    #endif
+    return nErr;
+    }
     // convert response
     nPosition = atoi(szResp);
 
@@ -949,7 +945,7 @@ int CPegasusUPBv2::setReverseEnable(bool bEnabled)
     else
         sprintf(szCmd,"SR:%d\n", NORMAL);
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -959,7 +955,7 @@ int CPegasusUPBv2::setReverseEnable(bool bEnabled)
 
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     if(nErr) {
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
@@ -1407,7 +1403,7 @@ int CPegasusUPBv2::setAutoDewOn(const int nPWMPort,const bool &bOn)
     if(nErr)
         return nErr;
 
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -1415,6 +1411,7 @@ int CPegasusUPBv2::setAutoDewOn(const int nPWMPort,const bool &bOn)
     fprintf(Logfile, "[%s] [CPegasusUPBv2::setAutoDewOn]  nAutoDewVal : %d \n", timestamp, nAutoDewVal);
     fflush(Logfile);
 #endif
+    getConsolidatedStatus();
     return nErr;
 }
 
@@ -1435,7 +1432,7 @@ bool CPegasusUPBv2::isAutoDewOn(const int nPWMPort)
             bDewOn = m_globalStatus.bAutoDewCh3;
             break;
     }
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -1459,7 +1456,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
 		return ERR_COMMNOLINK;
 
     m_pSerx->purgeTxRx();
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 	ltime = time(NULL);
 	timestamp = asctime(localtime(&ltime));
 	timestamp[strlen(timestamp) - 1] = 0;
@@ -1480,7 +1477,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
         if(nErr){
             return nErr;
         }
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
 		timestamp[strlen(timestamp) - 1] = 0;
@@ -1489,7 +1486,7 @@ int CPegasusUPBv2::upbCommand(const char *pszszCmd, char *pszResult, unsigned lo
 #endif
         // printf("Got response : %s\n",resp);
         strncpy(pszResult, szResp, nResultMaxLen);
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 		ltime = time(NULL);
 		timestamp = asctime(localtime(&ltime));
 		timestamp[strlen(timestamp) - 1] = 0;
@@ -1520,7 +1517,7 @@ int CPegasusUPBv2::readResponse(char *pszRespBuffer, unsigned long nBufferLen)
         }
 
         if (ulBytesRead !=1) {// timeout
-#ifdef PLUGIN_DEBUG
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
 			ltime = time(NULL);
 			timestamp = asctime(localtime(&ltime));
 			timestamp[strlen(timestamp) - 1] = 0;
