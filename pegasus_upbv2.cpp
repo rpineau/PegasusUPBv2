@@ -117,6 +117,17 @@ int CPegasusUPBv2::Connect(const char *pszPort)
         return nErr;
     }
     
+    nErr = setLedStatus(ON); // needed on REV C and up for the focuser motor to work.
+    if(nErr) {
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] CPegasusUPBv2::Connect **** ERROR **** setting LED on for stepper motor on REV C\n", timestamp);
+        fflush(Logfile);
+#endif
+    }
+
     nErr = getConsolidatedStatus();
     if(nErr) {
         m_pSerx->close();
@@ -201,7 +212,8 @@ int CPegasusUPBv2::moveRelativeToPosision(int nSteps)
 
     m_nTargetPos = m_globalStatus.focuser.nCurPos + nSteps;
 
-    nErr = gotoPosition(m_nTargetPos);
+    nErr = setLedStatus(ON); // needed on REV C and up for the focuser motor to work.
+    nErr |= gotoPosition(m_nTargetPos);
     
     return nErr;
 }
@@ -829,34 +841,6 @@ int CPegasusUPBv2::getPosition(int &nPosition)
     return nErr;
 }
 
-int CPegasusUPBv2::getLedStatus(int &nStatus)
-{
-    int nErr = PLUGIN_OK;
-    int nLedStatus = 0;
-    char szResp[SERIAL_BUFFER_SIZE];
-    std::vector<std::string> sParsedResp;
-	
-	if(!m_bIsConnected)
-		return ERR_COMMNOLINK;
-
-    nErr = upbCommand("PL\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
-        return nErr;
-
-    // parse response
-    parseResp(szResp, sParsedResp);
-    nLedStatus = atoi(sParsedResp[1].c_str());
-    switch(nLedStatus) {
-        case 0:
-            nStatus = OFF;
-            break;
-        case 1:
-            nStatus = ON;
-            break;
-    }
-
-    return nErr;
-}
 
 int CPegasusUPBv2::setLedStatus(int nStatus)
 {
@@ -1528,7 +1512,7 @@ int CPegasusUPBv2::readResponse(char *pszRespBuffer, unsigned long nBufferLen)
             break;
         }
         ulTotalBytesRead += ulBytesRead;
-    } while (*pszBufPtr++ != '\n' && ulTotalBytesRead < nBufferLen );
+    } while (ulTotalBytesRead < nBufferLen && *pszBufPtr++ != '\n');
 
     if(ulTotalBytesRead)
         *(pszBufPtr-1) = 0; //remove the \n

@@ -222,7 +222,6 @@ int	X2Focuser::execModalSettingsDialog(void)
     int nBacklashSteps = 0;
     bool bBacklashEnabled = false;
     bool bReverse = false;
-    int nLedStatus;
     int nDeviceType = UPBv2;
     int nTmpVal;
     
@@ -375,10 +374,6 @@ int	X2Focuser::execModalSettingsDialog(void)
         snprintf(tmpBuf, TEXT_BUFFER_SIZE, "<html><head/><body><p><span style=\" color:#%s;\">%3.2f A</span></p></body></html>", m_PegasusUPBv2.isOverCurrentDewHeater(DewHeaterC)?"ff0000":"00ff00", m_PegasusUPBv2.getDewHeaterCurrent(DewHeaterC));
         dx->setPropertyString("DewCDraw","text", tmpBuf);
 
-        // LED
-        m_PegasusUPBv2.getLedStatus(nLedStatus);
-        dx->setChecked("radioButton_3", nLedStatus==ON?true:false);
-        dx->setChecked("radioButton_4", nLedStatus==OFF?true:false);
     }
     else {
         // disable unsued controls when not connected
@@ -669,14 +664,6 @@ void X2Focuser::uiEvent(X2GUIExchangeInterface* uiex, const char* pszEvent)
             uiex->setEnabled("dewHeaterC", 1);
             uiex->setEnabled("pushButton_5", 1);
         }
-    }
-
-    // LED On/Off
-    else if (!strcmp(pszEvent, "on_radioButton_3_clicked")) {
-        m_PegasusUPBv2.setLedStatus(ON);
-    }
-    else if (!strcmp(pszEvent, "on_radioButton_4_clicked")) {
-        m_PegasusUPBv2.setLedStatus(OFF);
     }
 
 }

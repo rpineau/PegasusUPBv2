@@ -64,7 +64,7 @@
         <x>8</x>
         <y>96</y>
         <width>264</width>
-        <height>264</height>
+        <height>248</height>
        </rect>
       </property>
       <property name="title">
@@ -303,7 +303,7 @@
       <property name="geometry">
        <rect>
         <x>488</x>
-        <y>680</y>
+        <y>664</y>
         <width>81</width>
         <height>24</height>
        </rect>
@@ -319,7 +319,7 @@
       <property name="geometry">
        <rect>
         <x>576</x>
-        <y>680</y>
+        <y>664</y>
         <width>81</width>
         <height>24</height>
        </rect>
@@ -335,7 +335,7 @@
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>368</y>
+        <y>352</y>
         <width>464</width>
         <height>192</height>
        </rect>
@@ -970,7 +970,7 @@
         <x>280</x>
         <y>224</y>
         <width>378</width>
-        <height>136</height>
+        <height>120</height>
        </rect>
       </property>
       <property name="title">
@@ -1168,54 +1168,12 @@
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
-      <widget class="QRadioButton" name="radioButton_3">
-       <property name="geometry">
-        <rect>
-         <x>128</x>
-         <y>104</y>
-         <width>48</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>On</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioButton_4">
-       <property name="geometry">
-        <rect>
-         <x>192</x>
-         <y>104</y>
-         <width>48</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Off</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_30">
-       <property name="geometry">
-        <rect>
-         <x>8</x>
-         <y>104</y>
-         <width>96</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>LED indicator : </string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
         <x>8</x>
-        <y>568</y>
+        <y>552</y>
         <width>464</width>
         <height>144</height>
        </rect>

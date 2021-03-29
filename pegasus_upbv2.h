@@ -33,7 +33,7 @@
 
 // #define PLUGIN_DEBUG 4
 
-#define DRIVER_VERSION      1.12
+#define DRIVER_VERSION      1.13
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 1000
@@ -175,7 +175,6 @@ public:
 
     int         getPosition(int &nPosition);
 
-    int         getLedStatus(int &nStatus);
     int         setLedStatus(int nStatus);
 
     int         syncMotorPosition(int nPos);
