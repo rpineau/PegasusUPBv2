@@ -1,3 +1,0 @@
-//See hardwarelist.txt for details on this file format.
-//Version|Manufacturer|Model|Comment|MapsTo|PlugInDllName|X2Developer|Windows|Mac|Linux|
-2|Pegasus Astro|Ultimate Power Box V2|Ultimate Power Box V2| |libPegasusUPBv2||1|1|1|
