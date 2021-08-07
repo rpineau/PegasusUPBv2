@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>X2Focus</class>
+ <widget class="QDialog" name="X2Focus">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>308</width>
+    <height>422</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>308</width>
+    <height>422</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>308</width>
+    <height>422</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>UPBv2 Focuser settings</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_12">
+   <item>
+    <widget class="X2Form" name="X2Form">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>99999</width>
+       <height>99999</height>
+      </size>
+     </property>
+     <property name="sizeIncrement">
+      <size>
+       <width>1</width>
+       <height>1</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>96</y>
+        <width>264</width>
+        <height>248</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Motor Settings</string>
+      </property>
+      <widget class="QCheckBox" name="reverseDir">
+       <property name="geometry">
+        <rect>
+         <x>16</x>
+         <y>216</y>
+         <width>129</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Reverse Direction</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>24</x>
+         <y>96</y>
+         <width>91</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Limit Position :</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="limitEnable">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>96</y>
+         <width>43</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>On</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="posLimit">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>96</y>
+         <width>64</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="newPos">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>64</y>
+         <width>64</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>64</y>
+         <width>112</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Sync to Position :</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>30</y>
+         <width>81</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Max Speed :</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="maxSpeed">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>30</y>
+         <width>64</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>192</x>
+         <y>30</y>
+         <width>50</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Set</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>192</x>
+         <y>64</y>
+         <width>48</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Set</string>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>16</x>
+         <y>128</y>
+         <width>232</width>
+         <height>72</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Backlash Compensation</string>
+       </property>
+       <widget class="QCheckBox" name="backlashEnable">
+        <property name="geometry">
+         <rect>
+          <x>184</x>
+          <y>32</y>
+          <width>56</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>On</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>16</x>
+          <y>32</y>
+          <width>72</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Steps :</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="backlashSteps">
+        <property name="geometry">
+         <rect>
+          <x>104</x>
+          <y>32</y>
+          <width>64</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="maximum">
+         <number>99999</number>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_logo_2">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>0</y>
+        <width>264</width>
+        <height>90</height>
+       </rect>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string notr="true"/>
+      </property>
+      <property name="pixmap">
+       <pixmap>PegasusAstro.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="X2_PhotoFileName" stdset="0">
+       <string>PegasusAstro.png</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonCancel">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>360</y>
+        <width>81</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonOK">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>192</x>
+        <y>360</y>
+        <width>81</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>OK</string>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>X2Form</class>
+   <extends>QFrame</extends>
+   <header>x2form.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
