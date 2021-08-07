@@ -1,0 +1,3 @@
+//See hardwarelist.txt for details on this file format.
+//Version|Manufacturer|Model|Comment|MapsTo|PlugInDllName|X2Developer|Windows|Mac|Linux|
+2|Pegasus Astro|Ultimate Powerbox v2 Focuser|Main focuser on Ultimate Powerbox v2 (Motor port)| |libPegasusUPBv2Focuser||1|1|1|

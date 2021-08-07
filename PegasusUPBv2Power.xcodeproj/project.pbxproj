@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9306A75C1EDE325800A1E90B /* pegasus_upbv2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9306A75A1EDE325800A1E90B /* pegasus_upbv2.cpp */; };
+		9306A75D1EDE325800A1E90B /* pegasus_upbv2.h in Headers */ = {isa = PBXBuildFile; fileRef = 9306A75B1EDE325800A1E90B /* pegasus_upbv2.h */; };
+		933A04321EE0BD5D00D06551 /* StopWatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 933A04311EE0BD5D00D06551 /* StopWatch.h */; };
+		933E14271EDCA6B90044D947 /* x2powercontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 933E14231EDCA6B90044D947 /* x2powercontrol.cpp */; };
+		933E14281EDCA6B90044D947 /* x2powercontrol.h in Headers */ = {isa = PBXBuildFile; fileRef = 933E14241EDCA6B90044D947 /* x2powercontrol.h */; };
+		939F4F2D1EE1EE6300E26EED /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F4F2C1EE1EE6300E26EED /* IOKit.framework */; };
+		939F4F2F1EE1EE7200E26EED /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F4F2E1EE1EE7200E26EED /* CoreFoundation.framework */; };
+		93E3C59826BDDD1300FD3D20 /* pegasus_upbv2Focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */; };
+		93E3C59926BDDD1300FD3D20 /* x2focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */; };
+		93E3C59A26BDDD1300FD3D20 /* pegasus_upbv2Focuser.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */; };
+		93E3C59B26BDDD1300FD3D20 /* x2focuser.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C59726BDDD1300FD3D20 /* x2focuser.h */; };
+		93E3C5AE26BE248300FD3D20 /* powerMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C5AC26BE248300FD3D20 /* powerMain.h */; };
+		93E3C5AF26BE248300FD3D20 /* powerMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C5AD26BE248300FD3D20 /* powerMain.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9306A75A1EDE325800A1E90B /* pegasus_upbv2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pegasus_upbv2.cpp; sourceTree = "<group>"; };
+		9306A75B1EDE325800A1E90B /* pegasus_upbv2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pegasus_upbv2.h; sourceTree = "<group>"; };
+		933A04311EE0BD5D00D06551 /* StopWatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StopWatch.h; sourceTree = "<group>"; };
+		933E14191EDCA6680044D947 /* libPegasusUPBv2Power.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libPegasusUPBv2Power.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		933E14231EDCA6B90044D947 /* x2powercontrol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = x2powercontrol.cpp; sourceTree = "<group>"; };
+		933E14241EDCA6B90044D947 /* x2powercontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x2powercontrol.h; sourceTree = "<group>"; };
+		939F4F2C1EE1EE6300E26EED /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		939F4F2E1EE1EE7200E26EED /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pegasus_upbv2Focuser.cpp; path = pegasus_upbv2Focuser.cpp; sourceTree = "<group>"; };
+		93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = x2focuser.cpp; path = x2focuser.cpp; sourceTree = "<group>"; };
+		93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pegasus_upbv2Focuser.h; path = pegasus_upbv2Focuser.h; sourceTree = "<group>"; };
+		93E3C59726BDDD1300FD3D20 /* x2focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x2focuser.h; path = x2focuser.h; sourceTree = "<group>"; };
+		93E3C5AC26BE248300FD3D20 /* powerMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = powerMain.h; sourceTree = "<group>"; };
+		93E3C5AD26BE248300FD3D20 /* powerMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = powerMain.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		933E14161EDCA6680044D947 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				939F4F2F1EE1EE7200E26EED /* CoreFoundation.framework in Frameworks */,
+				939F4F2D1EE1EE6300E26EED /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		933E14101EDCA6680044D947 = {
+			isa = PBXGroup;
+			children = (
+				933E14201EDCA6AC0044D947 /* Sources */,
+				939F4F2B1EE1EE6200E26EED /* Frameworks */,
+				933E141A1EDCA6680044D947 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		933E141A1EDCA6680044D947 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				933E14191EDCA6680044D947 /* libPegasusUPBv2Power.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		933E14201EDCA6AC0044D947 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				93E3C5AD26BE248300FD3D20 /* powerMain.cpp */,
+				93E3C5AC26BE248300FD3D20 /* powerMain.h */,
+				93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */,
+				93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */,
+				93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */,
+				93E3C59726BDDD1300FD3D20 /* x2focuser.h */,
+				933A04311EE0BD5D00D06551 /* StopWatch.h */,
+				9306A75A1EDE325800A1E90B /* pegasus_upbv2.cpp */,
+				9306A75B1EDE325800A1E90B /* pegasus_upbv2.h */,
+				933E14231EDCA6B90044D947 /* x2powercontrol.cpp */,
+				933E14241EDCA6B90044D947 /* x2powercontrol.h */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		939F4F2B1EE1EE6200E26EED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				939F4F2E1EE1EE7200E26EED /* CoreFoundation.framework */,
+				939F4F2C1EE1EE6300E26EED /* IOKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		933E14171EDCA6680044D947 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				933E14281EDCA6B90044D947 /* x2powercontrol.h in Headers */,
+				93E3C59B26BDDD1300FD3D20 /* x2focuser.h in Headers */,
+				93E3C59A26BDDD1300FD3D20 /* pegasus_upbv2Focuser.h in Headers */,
+				933A04321EE0BD5D00D06551 /* StopWatch.h in Headers */,
+				9306A75D1EDE325800A1E90B /* pegasus_upbv2.h in Headers */,
+				93E3C5AE26BE248300FD3D20 /* powerMain.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		933E14181EDCA6680044D947 /* PegasusUPBv2Power */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 933E141D1EDCA6680044D947 /* Build configuration list for PBXNativeTarget "PegasusUPBv2Power" */;
+			buildPhases = (
+				933E14151EDCA6680044D947 /* Sources */,
+				933E14161EDCA6680044D947 /* Frameworks */,
+				933E14171EDCA6680044D947 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PegasusUPBv2Power;
+			productName = PegasusUPBv2Power;
+			productReference = 933E14191EDCA6680044D947 /* libPegasusUPBv2Power.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		933E14111EDCA6680044D947 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1220;
+				ORGANIZATIONNAME = "RTI-Zone";
+				TargetAttributes = {
+					933E14181EDCA6680044D947 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = PB97QXVYQC;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 933E14141EDCA6680044D947 /* Build configuration list for PBXProject "PegasusUPBv2Power" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 933E14101EDCA6680044D947;
+			productRefGroup = 933E141A1EDCA6680044D947 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				933E14181EDCA6680044D947 /* PegasusUPBv2Power */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		933E14151EDCA6680044D947 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93E3C59926BDDD1300FD3D20 /* x2focuser.cpp in Sources */,
+				933E14271EDCA6B90044D947 /* x2powercontrol.cpp in Sources */,
+				93E3C5AF26BE248300FD3D20 /* powerMain.cpp in Sources */,
+				93E3C59826BDDD1300FD3D20 /* pegasus_upbv2Focuser.cpp in Sources */,
+				9306A75C1EDE325800A1E90B /* pegasus_upbv2.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		933E141B1EDCA6680044D947 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		933E141C1EDCA6680044D947 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		933E141E1EDCA6680044D947 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = SB_MAC_BUILD;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/\"",
+					"\"$(SRCROOT)/../..\"",
+					"\"$(SRCROOT)/\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		933E141F1EDCA6680044D947 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = SB_MAC_BUILD;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/\"",
+					"\"$(SRCROOT)/../..\"",
+					"\"$(SRCROOT)/\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		933E14141EDCA6680044D947 /* Build configuration list for PBXProject "PegasusUPBv2Power" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				933E141B1EDCA6680044D947 /* Debug */,
+				933E141C1EDCA6680044D947 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		933E141D1EDCA6680044D947 /* Build configuration list for PBXNativeTarget "PegasusUPBv2Power" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				933E141E1EDCA6680044D947 /* Debug */,
+				933E141F1EDCA6680044D947 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 933E14111EDCA6680044D947 /* Project object */;
+}
