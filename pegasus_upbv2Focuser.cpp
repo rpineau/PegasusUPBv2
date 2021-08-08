@@ -792,7 +792,7 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
         return ERR_COMMNOLINK;
 
     m_pSerx->purgeTxRx();
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
@@ -813,7 +813,7 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
         if(nErr){
             return nErr;
         }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -822,7 +822,7 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
 #endif
         // printf("Got response : %s\n",resp);
         strncpy(pszResult, szResp, nResultMaxLen);
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -848,7 +848,7 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
 
     do {
         nErr = m_pSerx->bytesWaitingRx(nBytesWaiting);
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 3
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 3
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
@@ -858,7 +858,7 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
 #endif
         if(!nBytesWaiting) {
             if(nbTimeouts++ >= NB_RX_WAIT) {
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
                 ltime = time(NULL);
                 timestamp = asctime(localtime(&ltime));
                 timestamp[strlen(timestamp) - 1] = 0;
@@ -879,7 +879,7 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
             break; // buffer is full.. there is a problem !!
         }
         if(nErr) {
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
             ltime = time(NULL);
             timestamp = asctime(localtime(&ltime));
             timestamp[strlen(timestamp) - 1] = 0;
@@ -890,7 +890,7 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
         }
 
         if (ulBytesRead != nBytesWaiting) { // timeout
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
             ltime = time(NULL);
             timestamp = asctime(localtime(&ltime));
             timestamp[strlen(timestamp) - 1] = 0;
