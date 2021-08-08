@@ -33,6 +33,7 @@ else
 fi
 
 echo "Installing in $PLUGINS_DIR/PowerControlPlugIns/"
+mkdir -p "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns"
 cp "./powercontrollist PegasusUPBv2Power.txt" "$TheSkyX_Path/Resources/Common/Miscellaneous Files/"
 cp "./PegasusUPBv2Power.ui" "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns/"
 cp "./PegasusAstro.png" "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns/"
