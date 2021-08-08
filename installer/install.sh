@@ -26,6 +26,9 @@ if [ -d "$TheSkyX_Path/Resources/Common/PlugIns64" ]; then
 	PLUGINS_DIR="PlugIns64"
 elif [ -d "$TheSkyX_Path/Resources/Common/PlugInsARM32" ]; then
 	PLUGINS_DIR="PlugInsARM32"
+	if [ ! -d "$TheSkyX_Path/Resources/Common/PlugIns" ]; then
+        ln -s "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR" "$TheSkyX_Path/Resources/Common/PlugIns"
+    fi
 elif [ -d "$TheSkyX_Path/Resources/Common/PlugInsARM64" ]; then
 	PLUGINS_DIR="PlugInsARM64"
 else
@@ -33,6 +36,8 @@ else
 fi
 
 echo "Installing in $PLUGINS_DIR/PowerControlPlugIns/"
+
+mkdir -p "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns"
 cp "./powercontrollist PegasusUPBv2Power.txt" "$TheSkyX_Path/Resources/Common/Miscellaneous Files/"
 cp "./PegasusUPBv2Power.ui" "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns/"
 cp "./PegasusAstro.png" "$TheSkyX_Path/Resources/Common/$PLUGINS_DIR/PowerControlPlugIns/"

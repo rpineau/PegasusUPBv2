@@ -792,11 +792,11 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
         return ERR_COMMNOLINK;
 
     m_pSerx->purgeTxRx();
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
     ltime = time(NULL);
     timestamp = asctime(localtime(&ltime));
     timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] Sending %s\n", timestamp, pszszCmd);
+    fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::upbCommand] Sending %s\n", timestamp, pszszCmd);
     fflush(Logfile);
 #endif
     nErr = m_pSerx->writeFile((void *)pszszCmd, strlen(pszszCmd), ulBytesWrite);
@@ -804,6 +804,13 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
 
     // printf("Command %s sent. wrote %lu bytes\n", szCmd, ulBytesWrite);
     if(nErr){
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
+        ltime = time(NULL);
+        timestamp = asctime(localtime(&ltime));
+        timestamp[strlen(timestamp) - 1] = 0;
+        fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::upbCommand] writeFile error %d\n", timestamp, nErr);
+        fflush(Logfile);
+#endif
         return nErr;
     }
 
@@ -813,20 +820,20 @@ int CPegasusUPBv2Focuser::upbCommand(const char *pszszCmd, char *pszResult, unsi
         if(nErr){
             return nErr;
         }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] response \"%s\"\n", timestamp, szResp);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::upbCommand] response \"%s\"\n", timestamp, szResp);
         fflush(Logfile);
 #endif
         // printf("Got response : %s\n",resp);
         strncpy(pszResult, szResp, nResultMaxLen);
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] response copied to pszResult : \"%s\"\n", timestamp, pszResult);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::upbCommand] response copied to pszResult : \"%s\"\n", timestamp, pszResult);
         fflush(Logfile);
 #endif
     }
@@ -848,21 +855,21 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
 
     do {
         nErr = m_pSerx->bytesWaitingRx(nBytesWaiting);
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 3
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 3
         ltime = time(NULL);
         timestamp = asctime(localtime(&ltime));
         timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] nBytesWaiting = %d\n", timestamp, nBytesWaiting);
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] nBytesWaiting nErr = %d\n", timestamp, nErr);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] nBytesWaiting = %d\n", timestamp, nBytesWaiting);
+        fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] nBytesWaiting nErr = %d\n", timestamp, nErr);
         fflush(Logfile);
 #endif
         if(!nBytesWaiting) {
             if(nbTimeouts++ >= NB_RX_WAIT) {
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
                 ltime = time(NULL);
                 timestamp = asctime(localtime(&ltime));
                 timestamp[strlen(timestamp) - 1] = 0;
-                fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] bytesWaitingRx timeout, no data for %d loops\n", timestamp, NB_RX_WAIT);
+                fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] bytesWaitingRx timeout, no data for %d loops\n", timestamp, NB_RX_WAIT);
                 fflush(Logfile);
 #endif
                 nErr = ERR_RXTIMEOUT;
@@ -879,24 +886,24 @@ int CPegasusUPBv2Focuser::readResponse(char *szRespBuffer, unsigned long nBuffer
             break; // buffer is full.. there is a problem !!
         }
         if(nErr) {
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
             ltime = time(NULL);
             timestamp = asctime(localtime(&ltime));
             timestamp[strlen(timestamp) - 1] = 0;
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile error.\n", timestamp);
+            fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] readFile error.\n", timestamp);
             fflush(Logfile);
 #endif
             return nErr;
         }
 
         if (ulBytesRead != nBytesWaiting) { // timeout
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+#if defined PLUGIN_DEBUG_UPBv2_FOC && PLUGIN_DEBUG_UPBv2_FOC >= 2
             ltime = time(NULL);
             timestamp = asctime(localtime(&ltime));
             timestamp[strlen(timestamp) - 1] = 0;
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile Timeout Error\n", timestamp);
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile nBytesWaiting = %d\n", timestamp, nBytesWaiting);
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile ulBytesRead = %lu\n", timestamp, ulBytesRead);
+            fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] readFile Timeout Error\n", timestamp);
+            fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] readFile nBytesWaiting = %d\n", timestamp, nBytesWaiting);
+            fprintf(Logfile, "[%s] [CPegasusUPBv2Focuser::readResponse] readFile ulBytesRead = %lu\n", timestamp, ulBytesRead);
             fflush(Logfile);
 #endif
         }
