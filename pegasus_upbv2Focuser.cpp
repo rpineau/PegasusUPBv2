@@ -132,6 +132,8 @@ int CPegasusUPBv2Focuser::Connect(const char *pszPort)
 #endif
     }
 
+    nErr = getFirmwareVersion(m_szFirmwareVersion, TEXT_BUFFER_SIZE);
+
     nErr = getConsolidatedStatus();
     if(nErr) {
         m_pSerx->close();
@@ -559,6 +561,12 @@ int CPegasusUPBv2Focuser::getFirmwareVersion(char *pszVersion, int nStrMaxLen)
     return nErr;
 }
 
+void CPegasusUPBv2Focuser::getFirmwareString(std::string &sFirmware)
+{
+    sFirmware.assign(m_szFirmwareVersion);
+
+}
+
 int CPegasusUPBv2Focuser::getTemperature(double &dTemperature)
 {
     int nErr = PLUGIN_OK_UPBV2_FOC;
@@ -657,6 +665,15 @@ int CPegasusUPBv2Focuser::getDeviceType(int &nDevice)
     nDevice = m_globalStatus.nDeviceType;
     
     return nErr;
+}
+
+void CPegasusUPBv2Focuser::getDeviceTypeString(std::string &sDeviceType)
+{
+    if( m_globalStatus.nDeviceType== UPBv2_FOC)
+        sDeviceType = "Ultimate Powerbox V2";
+    else
+        sDeviceType = "Unknown device";
+
 }
 
 int CPegasusUPBv2Focuser::getPosLimit()

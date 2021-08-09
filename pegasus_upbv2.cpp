@@ -126,6 +126,8 @@ int CPegasusUPBv2Power::Connect(const char *pszPort)
 #endif
     }
 
+    nErr = getFirmwareVersion(m_szFirmwareVersion, TEXT_BUFFER_SIZE);
+
     nErr = getConsolidatedStatus();
     if(nErr) {
         m_pSerx->close();
@@ -555,6 +557,12 @@ int CPegasusUPBv2Power::getFirmwareVersion(char *pszVersion, int nStrMaxLen)
     return nErr;
 }
 
+void CPegasusUPBv2Power::getFirmwareVersionString(std::string &sFirmware)
+{
+    sFirmware.assign(m_szFirmwareVersion);
+}
+
+
 int CPegasusUPBv2Power::getTemperature(double &dTemperature)
 {
     int nErr = PLUGIN_OK_UPBv2_POWER;
@@ -639,6 +647,15 @@ int CPegasusUPBv2Power::getDeviceType(int &nDevice)
     nDevice = m_globalStatus.nDeviceType;
     
     return nErr;
+}
+
+void CPegasusUPBv2Power::getDeviceTypeString(std::string &sDeviceType)
+{
+    if( m_globalStatus.nDeviceType== UPBv2_POWER)
+        sDeviceType = "Ultimate Powerbox V2";
+    else
+        sDeviceType = "Unknown device";
+
 }
 
 

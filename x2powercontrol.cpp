@@ -139,22 +139,13 @@ bool X2PowerControl::isLinked() const
 
 void X2PowerControl::deviceInfoNameShort(BasicStringInterface& str) const
 {
-    int deviceType;
     X2PowerControl* pMe = (X2PowerControl*)this;
-
-    X2MutexLocker ml(pMe->GetMutex());
-
 
     if(!m_bLinked) {
         str="NA";
     }
     else {
-        pMe->m_PegasusUPBv2Power.getDeviceType(deviceType);
-
-        if(deviceType == UPBv2_FOC)
-            str = "Ultimate Powerbox V2";
-        else
-            str = "Unknown device";
+        pMe->deviceInfoModel(str);
     }
 }
 
@@ -162,41 +153,37 @@ void X2PowerControl::deviceInfoNameLong(BasicStringInterface& str) const
 {
     deviceInfoNameShort(str);
 }
+
 void X2PowerControl::deviceInfoDetailedDescription(BasicStringInterface& str) const
 {
 	str = "Pegasus Astro UPBv2 power port controll";
 }
+
 void X2PowerControl::deviceInfoFirmwareVersion(BasicStringInterface& str)
 {
-    X2MutexLocker ml(GetMutex());
-
     if(!m_bLinked) {
         str="NA";
     }
     else {
         // get firmware version
-        char cFirmware[TEXT_BUFFER_SIZE];
-        m_PegasusUPBv2Power.getFirmwareVersion(cFirmware, TEXT_BUFFER_SIZE);
-        str = cFirmware;
+        std::string sFirmware;
+        m_PegasusUPBv2Power.getFirmwareVersionString(sFirmware);
+        str = sFirmware.c_str();
     }
 
 }
+
 void X2PowerControl::deviceInfoModel(BasicStringInterface& str)
 {
-    X2MutexLocker ml(GetMutex());
 
     if(!m_bLinked) {
         str="NA";
     }
     else {
         // get model version
-        int deviceType;
-
-        m_PegasusUPBv2Power.getDeviceType(deviceType);
-        if(deviceType == UPBv2_POWER)
-            str = "Ultimate Powerbox V2";
-        else
-            str = "Unknown device";
+        std::string sDeviceType;
+        m_PegasusUPBv2Power.getDeviceTypeString(sDeviceType);
+        str = sDeviceType.c_str();
     }
 }
 
