@@ -32,7 +32,7 @@
 
 // #define PLUGIN_DEBUG_UPBv2_POWER 4
 
-#define DRIVER_VERSION_POWER      1.00
+#define DRIVER_VERSION_POWER      1.16
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 2500
@@ -148,6 +148,7 @@ public:
     int         getOnBootPowerState(void);
 
     int         getFirmwareVersion(char *pszVersion, int nStrMaxLen);
+    void        getFirmwareVersionString(std::string &sFirmware);
     int         getTemperature(double &dTemperature);
 
     int         getPosition(int &nPosition);
@@ -155,6 +156,7 @@ public:
     int         setLedStatus(int nStatus);
 
     int         getDeviceType(int &nDevice);
+    void        getDeviceTypeString(std::string &sDeviceType);
 
     float       getVoltage();
     float       getCurrent();

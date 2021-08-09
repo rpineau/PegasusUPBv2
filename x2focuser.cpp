@@ -109,22 +109,13 @@ double X2Focuser::driverInfoVersion(void) const
 
 void X2Focuser::deviceInfoNameShort(BasicStringInterface& str) const
 {
-    int deviceType;
     X2Focuser* pMe = (X2Focuser*)this;
-
-    X2MutexLocker ml(pMe->GetMutex());
-
 
     if(!m_bLinked) {
         str="NA";
     }
     else {
-        pMe->m_PegasusUPBv2Foc.getDeviceType(deviceType);
-
-        if(deviceType == UPBv2_FOC)
-            str = "Ultimate Powerbox V2";
-        else
-            str = "Unknown device";
+        pMe->deviceInfoModel(str);
     }
 }
 
@@ -140,35 +131,29 @@ void X2Focuser::deviceInfoDetailedDescription(BasicStringInterface& str) const
 
 void X2Focuser::deviceInfoFirmwareVersion(BasicStringInterface& str)				
 {
-    X2MutexLocker ml(GetMutex());
 
     if(!m_bLinked) {
         str="NA";
     }
     else {
     // get firmware version
-        char cFirmware[TEXT_BUFFER_SIZE];
-        m_PegasusUPBv2Foc.getFirmwareVersion(cFirmware, TEXT_BUFFER_SIZE);
-        str = cFirmware;
+        std::string sFirmware;
+        m_PegasusUPBv2Foc.getFirmwareString(sFirmware);
+        str = sFirmware.c_str();
     }
 }
 
 void X2Focuser::deviceInfoModel(BasicStringInterface& str)							
 {
-    X2MutexLocker ml(GetMutex());
 
     if(!m_bLinked) {
         str="NA";
     }
     else {
-        // get model version
-        int deviceType;
-
-        m_PegasusUPBv2Foc.getDeviceType(deviceType);
-        if(deviceType == UPBv2_FOC)
-            str = "Ultimate Powerbox V2";
-        else
-            str = "Unknown device";
+        // get model versiona
+        std::string sDeviceType;
+        m_PegasusUPBv2Foc.getDeviceTypeString(sDeviceType);
+        str = sDeviceType.c_str();
     }
 }
 

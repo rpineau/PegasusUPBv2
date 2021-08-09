@@ -33,7 +33,7 @@
 
 // #define PLUGIN_DEBUG_UPBv2_FOC 4
 
-#define DRIVER_VERSION_FOC     1.15
+#define DRIVER_VERSION_FOC     1.16
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 2500
@@ -133,6 +133,8 @@ public:
     int         setBacklashComp(int nSteps);
 
     int         getFirmwareVersion(char *pszVersion, int nStrMaxLen);
+    void        getFirmwareString(std::string &sFirmware);
+
     int         getTemperature(double &dTemperature);
 
     int         getPosition(int &nPosition);
@@ -142,7 +144,7 @@ public:
     int         syncMotorPosition(int nPos);
 
     int         getDeviceType(int &nDevice);
-
+    void        getDeviceTypeString(std::string &sDeviceType);
     int         getPosLimit(void);
     void        setPosLimit(int nLimit);
 
