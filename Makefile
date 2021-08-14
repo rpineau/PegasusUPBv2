@@ -17,7 +17,9 @@ OBJS_Power = $(SRCS_Power:.cpp=.o)
 
 .PHONY: all
 all: ${TARGET_LIBFocuser} ${TARGET_LIBPower}
+.PHONY: power
 power : ${TARGET_LIBPower}
+.PHONY: focuser
 focuser : ${TARGET_LIBFocuser}
 
 $(TARGET_LIBFocuser): $(OBJS_Focuser)
@@ -28,10 +30,7 @@ $(TARGET_LIBPower): $(OBJS_Power)
 	$(CC) ${LDFLAGS} -o $@ $^
 	$(STRIP) $@ >/dev/null 2>&1  || true
 
-$(SRCS_Focuser:.cpp=.d):%.d:%.cpp
-	$(CC) $(CFLAGS) $(CPPFLAGS) -MM $< >$@
-
-$(SRCS_Power:.cpp=.d):%.d:%.cpp
+%.cpp.o: %.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -MM $< >$@
 
 .PHONY: clean
