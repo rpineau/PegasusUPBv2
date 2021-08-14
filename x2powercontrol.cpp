@@ -201,11 +201,23 @@ int X2PowerControl::queryAbstraction(const char* pszName, void** ppVal)
 {
 	*ppVal = NULL;
 
-    if (!strcmp(pszName, ModalSettingsDialogInterface_Name))
+    if (!strcmp(pszName, LinkInterface_Name))
+        *ppVal = (LinkInterface*)this;
+
+    else if (!strcmp(pszName, ModalSettingsDialogInterface_Name))
         *ppVal = dynamic_cast<ModalSettingsDialogInterface*>(this);
 
     else if (!strcmp(pszName, X2GUIEventInterface_Name))
         *ppVal = dynamic_cast<X2GUIEventInterface*>(this);
+
+    else if (!strcmp(pszName, LoggerInterface_Name))
+        *ppVal = GetLogger();
+
+    else if (!strcmp(pszName, ModalSettingsDialogInterface_Name))
+        *ppVal = dynamic_cast<ModalSettingsDialogInterface*>(this);
+
+    else if (!strcmp(pszName, MultiConnectionDeviceInterface_Name))
+        *ppVal = dynamic_cast<MultiConnectionDeviceInterface*>(this);
 
     else if (!strcmp(pszName, CircuitLabelsInterface_Name))
         *ppVal = dynamic_cast<CircuitLabelsInterface*>(this);
