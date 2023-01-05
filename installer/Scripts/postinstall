@@ -27,6 +27,8 @@ fi
 
 echo "Installing in $PLUGINS_DIR/PowerControlPlugIns/"
 
+mkdir -p "$PLUGINS_DIR/PowerControlPlugIns"
+
 cp "/tmp/PegasusUPBv2_X2/powercontrollist PegasusUPBv2Power.txt" "$TheSkyX_Path/Resources/Common/Miscellaneous Files/"
 if [ "$?" -ne "0" ]; then exit 1; fi
 
