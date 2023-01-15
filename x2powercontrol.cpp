@@ -13,6 +13,8 @@ X2PowerControl::X2PowerControl(const char* pszDisplayName,
     char portName[255];
 	std::string sLabel;
     int i;
+    int nPwm;
+    int nPwmOn;
 
 	m_pTheSkyXForMounts = pTheSkyXIn;
 	m_pSleeper = pSleeperIn;
@@ -80,6 +82,21 @@ X2PowerControl::X2PowerControl(const char* pszDisplayName,
             m_pIniUtil->readString(PARENT_KEY_POWER, m_IniPortKey[i].c_str(), sLabel.c_str(), portName, 255);
             m_sPortNames.push_back(std::string(portName));
 		}
+        
+        nPwm = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMA,0);
+        m_PegasusUPBv2Power.setDewHeaterPWMVal(DewHeaterA, nPwm);
+        nPwmOn = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMA_ON,0);
+        m_PegasusUPBv2Power.setDewHeaterOnVal(DewHeaterA, nPwmOn?true:false);
+
+        nPwm = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMB,0);
+        m_PegasusUPBv2Power.setDewHeaterPWMVal(DewHeaterB, nPwm);
+        nPwmOn = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMB_ON,0);
+        m_PegasusUPBv2Power.setDewHeaterOnVal(DewHeaterB, nPwmOn?true:false);
+
+        nPwm = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMC,0);
+        m_PegasusUPBv2Power.setDewHeaterPWMVal(DewHeaterC, nPwm);
+        nPwmOn = m_pIniUtil->readInt(PARENT_KEY_POWER, CHILD_KEY_PWMC_ON,0);
+        m_PegasusUPBv2Power.setDewHeaterOnVal(DewHeaterC, nPwmOn?true:false);
     }
 }
 
@@ -195,7 +212,7 @@ void X2PowerControl::driverInfoDetailedInfo(BasicStringInterface& str) const
 
 double X2PowerControl::driverInfoVersion(void) const
 {
-	return DRIVER_VERSION_POWER;
+	return PLUGIN_VERSION;
 }
 
 int X2PowerControl::queryAbstraction(const char* pszName, void** ppVal)
@@ -412,6 +429,14 @@ int X2PowerControl::execModalSettingsDialog()
     //Retrieve values from the user interface
     if (bPressedOK) {
         nErr = SB_OK;
+        if(m_bLinked) {
+            dx->propertyInt("dewHeaterA", "value", nTmpVal);
+            m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMA, nTmpVal);
+            dx->propertyInt("dewHeaterB", "value", nTmpVal);
+            m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMB, nTmpVal);
+            dx->propertyInt("dewHeaterC", "value", nTmpVal);
+            m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMC, nTmpVal);
+        }
     }
     return nErr;
 }
@@ -655,10 +680,14 @@ int X2PowerControl::setCircuitState(const int& nIndex, const bool& bZeroForOffOn
 
 	if(!m_bLinked)
         return ERR_NOLINK;
+#ifdef PLUGIN_DEBUG
+    std::stringstream ssTmp;
+    ssTmp<< "setCircuitState for index " << nIndex << " with state " << (bZeroForOffOneForOn?"On":"Off")<<std::endl;
+    m_PegasusUPBv2Power.log(ssTmp.str());
+#endif
 
     X2MutexLocker ml(GetMutex());
     if (nIndex >= 0 && nIndex < m_PegasusUPBv2Power.getPortCount()) {
-        nErr = m_PegasusUPBv2Power.setPortOn(nIndex, bZeroForOffOneForOn);
         switch(nIndex) {
             case DC1 : // power port 1
                 nErr = m_PegasusUPBv2Power.setPortOn(DC1, bZeroForOffOneForOn);
@@ -674,12 +703,15 @@ int X2PowerControl::setCircuitState(const int& nIndex, const bool& bZeroForOffOn
                 break;
             case DEW1 : // Dew Heater A
                 nErr = m_PegasusUPBv2Power.setPortOn(DEW1, bZeroForOffOneForOn);
+                m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMA_ON, (bZeroForOffOneForOn?1:0));
                 break;
             case DEW2 : // Dew Heater B
                 nErr = m_PegasusUPBv2Power.setPortOn(DEW2, bZeroForOffOneForOn);
+                m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMB_ON, (bZeroForOffOneForOn?1:0));
                 break;
             case DEW3 : // Dew Heater C
                 nErr = m_PegasusUPBv2Power.setPortOn(DEW3, bZeroForOffOneForOn);
+                m_pIniUtil->writeInt(PARENT_KEY_POWER, CHILD_KEY_PWMC_ON, (bZeroForOffOneForOn?1:0));
                 break;
             case USB1 : // usb 1
                 nErr = m_PegasusUPBv2Power.setUsbPortState(1,bZeroForOffOneForOn);

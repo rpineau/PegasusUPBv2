@@ -22,17 +22,19 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
-#include <exception>
-#include <typeinfo>
-#include <stdexcept>
+#include <iomanip>
+#include <fstream>
+#include <chrono>
+#include <thread>
+#include <ctime>
 
 #include "../../licensedinterfaces/sberrorx.h"
 #include "../../licensedinterfaces/serxinterface.h"
 #include "../../licensedinterfaces/sleeperinterface.h"
 
-// #define PLUGIN_DEBUG_UPBv2_POWER 4
+// #define PLUGIN_DEBUG 4
 
-#define DRIVER_VERSION_POWER      1.17
+#define PLUGIN_VERSION      1.18
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 2500
@@ -43,7 +45,7 @@
 
 #define NB_PORTS 13
 
-enum Errors_UPBv2_POWER         {PLUGIN_OK_UPBv2_POWER = 0, NOT_CONNECTED_UPBv2_POWER, CANT_CONNECT_UPBv2_POWER, BAD_CMD_RESPONSE_UPBv2_POWER, COMMAND_FAILED_UPBv2_POWER, COMMAND_TIMEOUT_UPBv2_POWER};
+enum Errors_UPBv2_POWER         {PLUGIN_OK = 0, NOT_CONNECTED_UPBv2_POWER, CANT_CONNECT_UPBv2_POWER, BAD_CMD_RESPONSE_UPBv2_POWER, COMMAND_FAILED_UPBv2_POWER, COMMAND_TIMEOUT_UPBv2_POWER};
 enum DeviceType_UPBv2_POWER     {NONE_POWER = 0, UPBv2_POWER};
 enum GetLedStatus_UPBv2_POWER   {OFF_POWER = 0, ON_POWER};
 enum SetLEdStatus_UPBv2_POWER   {SWITCH_OFF_POWER = 0, SWITCH_ON_POWER};
@@ -183,6 +185,7 @@ public:
     int         getDewHeaterPWM(const int &nDewHeater);
     float       getDewHeaterCurrent(const int &nDewHeater);
     int         setDewHeaterPWMVal(const int &nDewHeater, const int &nPWM);
+    void        setDewHeaterOnVal(const int &nDewHeater, const bool bOn);
 
     int         getAdjPortVolts(int &nVolts);
     int         setAdjPortVolts(int nVolts);
@@ -193,6 +196,10 @@ public:
     int         getAutoDewAggressivness(int &nLevel);
     int         setAutoDewAggressivness(int nLevel);
     int         getPortCount();
+
+#ifdef PLUGIN_DEBUG
+    void        log(std::string sText);
+#endif
 
 protected:
 
@@ -226,13 +233,13 @@ protected:
     bool            m_bPWMC_On;
     int             m_nAutoDewAgressiveness;
 
-#ifdef PLUGIN_DEBUG_UPBv2_POWER
-    std::string m_sLogfilePath;
+#ifdef PLUGIN_DEBUG
     // timestamp for logs
-    char *timestamp;
-    time_t ltime;
-    FILE *Logfile;      // LogFile
+    const std::string getTimeStamp();
+    std::ofstream m_sLogFile;
+    std::string m_sLogfilePath;
 #endif
+
 
 };
 

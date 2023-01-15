@@ -33,7 +33,7 @@
 
 // #define PLUGIN_DEBUG_UPBv2_FOC 4
 
-#define DRIVER_VERSION_FOC     1.17
+#define DRIVER_VERSION_FOC     1.18
 
 #define SERIAL_BUFFER_SIZE 1024
 #define MAX_TIMEOUT 2500

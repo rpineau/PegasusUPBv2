@@ -31,10 +31,10 @@
 		933E14241EDCA6B90044D947 /* x2powercontrol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x2powercontrol.h; sourceTree = "<group>"; };
 		939F4F2C1EE1EE6300E26EED /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		939F4F2E1EE1EE7200E26EED /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pegasus_upbv2Focuser.cpp; path = pegasus_upbv2Focuser.cpp; sourceTree = "<group>"; };
-		93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = x2focuser.cpp; path = x2focuser.cpp; sourceTree = "<group>"; };
-		93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pegasus_upbv2Focuser.h; path = pegasus_upbv2Focuser.h; sourceTree = "<group>"; };
-		93E3C59726BDDD1300FD3D20 /* x2focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = x2focuser.h; path = x2focuser.h; sourceTree = "<group>"; };
+		93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pegasus_upbv2Focuser.cpp; sourceTree = "<group>"; };
+		93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = x2focuser.cpp; sourceTree = "<group>"; };
+		93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pegasus_upbv2Focuser.h; sourceTree = "<group>"; };
+		93E3C59726BDDD1300FD3D20 /* x2focuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x2focuser.h; sourceTree = "<group>"; };
 		93E3C5AC26BE248300FD3D20 /* powerMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = powerMain.h; sourceTree = "<group>"; };
 		93E3C5AD26BE248300FD3D20 /* powerMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = powerMain.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -233,7 +233,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -285,7 +285,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -306,7 +306,7 @@
 					"\"$(SRCROOT)/../..\"",
 					"\"$(SRCROOT)/\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -327,7 +327,7 @@
 					"\"$(SRCROOT)/../..\"",
 					"\"$(SRCROOT)/\"",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

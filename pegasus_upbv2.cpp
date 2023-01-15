@@ -16,11 +16,11 @@ CPegasusUPBv2Power::CPegasusUPBv2Power()
     m_pSleeper = NULL;
     
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
+#ifdef PLUGIN_DEBUG
 #if defined(SB_WIN_BUILD)
     m_sLogfilePath = getenv("HOMEDRIVE");
     m_sLogfilePath += getenv("HOMEPATH");
-    m_sLogfilePath += "\\X2_PegasusUPBv2PowerLog.txt";
+    m_sLogfilePath += "\X2_PegasusUPBv2PowerLog.txt";
 #elif defined(SB_LINUX_BUILD)
     m_sLogfilePath = getenv("HOME");
     m_sLogfilePath += "/X2_PegasusUPBv2PowerLog.txt";
@@ -28,42 +28,37 @@ CPegasusUPBv2Power::CPegasusUPBv2Power()
     m_sLogfilePath = getenv("HOME");
     m_sLogfilePath += "/X2_PegasusUPBv2PowerLog.txt";
 #endif
-    Logfile = fopen(m_sLogfilePath.c_str(), "w");
+    m_sLogFile.open(m_sLogfilePath, std::ios::out |std::ios::trunc);
 #endif
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::CPegasusUPBv2Power] version %3.2f build 2020_08_01_1800.\n", timestamp, DRIVER_VERSION_POWER);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::CPegasusUPBv2Power] Constructor Called.\n", timestamp);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [CPegasusUPBv2Power] Version " << std::fixed << std::setprecision(2) << PLUGIN_VERSION << " build " << __DATE__ << " " << __TIME__ << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [CPegasusUPBv2Power] Constructor Called." << std::endl;
+    m_sLogFile.flush();
 #endif
 
 }
 
 CPegasusUPBv2Power::~CPegasusUPBv2Power()
 {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	// Close LogFile
-	if (Logfile) fclose(Logfile);
+#ifdef    PLUGIN_DEBUG
+    // Close LogFile
+    if(m_sLogFile.is_open())
+        m_sLogFile.close();
 #endif
 }
 
 int CPegasusUPBv2Power::Connect(const char *pszPort)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     int nDevice;
 
     if(!m_pSerx)
         return ERR_COMMNOLINK;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect Called %s\n", timestamp, pszPort);
-	fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect] Called." << std::endl;
+    m_sLogFile.flush();
 #endif
 
     // 9600 8N1
@@ -80,24 +75,19 @@ int CPegasusUPBv2Power::Connect(const char *pszPort)
     if(!m_bIsConnected)
         return nErr;
 
-    m_pSleeper->sleep(1500);
-    
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect connected to %s\n", timestamp, pszPort);
-	fflush(Logfile);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    std::this_thread::yield();
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect] connected to " << pszPort << std::endl;
+    m_sLogFile.flush();
 #endif
-	
+
     // get status so we can figure out what device we are connecting to.
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect getting device type\n", timestamp);
-	fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect] getting device type." << std::endl;
+    m_sLogFile.flush();
 #endif
+
     nErr = getDeviceType(nDevice);
     if(nErr) {
         if(nDevice != UPBv2_POWER) {
@@ -105,24 +95,18 @@ int CPegasusUPBv2Power::Connect(const char *pszPort)
             m_bIsConnected = false;
             nErr = ERR_DEVICENOTSUPPORTED;
         }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-		ltime = time(NULL);
-		timestamp = asctime(localtime(&ltime));
-		timestamp[strlen(timestamp) - 1] = 0;
-		fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect **** ERROR **** getting device type\n", timestamp);
-		fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect]  **** ERROR **** getting device type." << std::endl;
+        m_sLogFile.flush();
 #endif
         return nErr;
     }
     
     nErr = setLedStatus(ON_POWER); // needed on REV C and up for the focuser motor to work.
     if(nErr) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect **** ERROR **** setting LED on for stepper motor on REV C\n", timestamp);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect]  **** ERROR **** setting LED on for stepper motor on REV C." << std::endl;
+        m_sLogFile.flush();
 #endif
     }
 
@@ -132,27 +116,27 @@ int CPegasusUPBv2Power::Connect(const char *pszPort)
     if(nErr) {
         m_pSerx->close();
         m_bIsConnected = false;
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] CPegasusUPBv2Power::Connect **** ERROR **** getting device full status\n", timestamp);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Connect]  **** ERROR **** getting device full status." << std::endl;
+        m_sLogFile.flush();
 #endif
     }
 
-    m_nPWMA = m_globalStatus.nDew1PWM;
-    m_nPWMB = m_globalStatus.nDew2PWM;
-    m_nPWMC = m_globalStatus.nDew3PWM;
-    m_bPWMA_On = (m_nPWMA!=0);
-    m_bPWMB_On = (m_nPWMB!=0);
-    m_bPWMC_On = (m_nPWMC!=0);
+
+    setPortOn(DEW1, m_bPWMA_On);
+    setPortOn(DEW2, m_bPWMB_On);
+    setPortOn(DEW3, m_bPWMC_On);
 
     return nErr;
 }
 
 void CPegasusUPBv2Power::Disconnect(int nInstanceCount)
 {
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [Disconnect] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     if(m_bIsConnected && m_pSerx && nInstanceCount==1)
         m_pSerx->close();
  
@@ -167,21 +151,29 @@ int CPegasusUPBv2Power::getStatus()
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getStatus] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
-    // OK_UPB or OK_PPB
+    // calling twice to clear any previous errors
     nErr = upbCommand("P#\n", szResp, SERIAL_BUFFER_SIZE);
-    if(nErr)
-        return nErr;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100)); // wait for a bit, background thread will update m_CCA_Settings.bIsMoving
+    std::this_thread::yield();
+    nErr = upbCommand("P#\n", szResp, SERIAL_BUFFER_SIZE);
 
+    if(nErr) {
+        return nErr;
+    }
     if(strstr(szResp,"_OK")) {
         if(strstr(szResp,"UPB2")) {
             m_globalStatus.nDeviceType = UPBv2_POWER;
         }
         else {
             m_globalStatus.nDeviceType = NONE_POWER;
-            return ERR_DEVICENOTSUPPORTED;
+             return ERR_DEVICENOTSUPPORTED;
         }
-        nErr = PLUGIN_OK_UPBv2_POWER;
+        nErr = PLUGIN_OK;
     }
     else {
         nErr = COMMAND_FAILED_UPBv2_POWER;
@@ -198,71 +190,64 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
+
     nErr = upbCommand("PA\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] ERROR = %d\n", timestamp, nErr);
-        fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] ERROR = " << nErr << std::endl;
+        m_sLogFile.flush();
 #endif
         return nErr;
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus]  about to parse response\n", timestamp);
-	fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] about to parse response." << std::endl;
+    m_sLogFile.flush();
 #endif
 
     // parse response
     parseResp(szResp, m_svParsedRespForPA);
     if(nErr) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] parse error = %d\n", timestamp, nErr);
-        fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] parse error = " << nErr << std::endl;
+        m_sLogFile.flush();
 #endif
         return nErr;
     }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus]  response parsing done\n", timestamp);
-	fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] response parsing done." << std::endl;
+    m_sLogFile.flush();
 #endif
 
     if(m_svParsedRespForPA.size()<18) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus]  parsing returned an incomplete answer\n", timestamp);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] parsing returned an incomplete answer." << std::endl;
+        m_sLogFile.flush();
 #endif
         return BAD_CMD_RESPONSE_UPBv2_POWER;
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] converting value and setting them in m_globalStatus\n", timestamp);
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbDevice] = %s \n", timestamp, m_svParsedRespForPA[upbDevice].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbVoltage] = %s \n", timestamp, m_svParsedRespForPA[upbVoltage].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbCurrent] = %s \n", timestamp, m_svParsedRespForPA[upbCurrent].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbPower] = %s \n", timestamp, m_svParsedRespForPA[upbPower].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbTemp] = %s \n", timestamp, m_svParsedRespForPA[upbTemp].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbHumidity] = %s \n", timestamp, m_svParsedRespForPA[upbHumidity].c_str());
-    fprintf(Logfile, "[%s][CPegasusUPBv2Power::getConsolidatedStatus] m_svParsedRespForPA[upbDewPoint] = %s \n", timestamp, m_svParsedRespForPA[upbDewPoint].c_str());
-    fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] converting value and setting them in m_globalStatus." << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbDevice]   = " << m_svParsedRespForPA[upbDevice] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbVoltage]  = " << m_svParsedRespForPA[upbVoltage] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbCurrent]  = " << m_svParsedRespForPA[upbCurrent] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbPower]    = " << m_svParsedRespForPA[upbPower] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbTemp]     = " << m_svParsedRespForPA[upbTemp] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbHumidity] = " << m_svParsedRespForPA[upbHumidity] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] m_svParsedRespForPA[upbDewPoint] = " << m_svParsedRespForPA[upbDewPoint] << std::endl;
+    m_sLogFile.flush();
 #endif
+
 
     m_globalStatus.fVoltage = std::stof(m_svParsedRespForPA[upbVoltage]);
     m_globalStatus.fCurent = std::stof(m_svParsedRespForPA[upbCurrent]);
@@ -281,36 +266,31 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
     else
         m_globalStatus.fDewPoint = -273.15f;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fVoltage = %3.2f\n", timestamp, m_globalStatus.fVoltage);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurent = %3.2f\n", timestamp, m_globalStatus.fCurent);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nPower = %d\n", timestamp, m_globalStatus.nPower);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fTemp = %3.2f\n", timestamp, m_globalStatus.fTemp);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nHumidity = %d\n", timestamp, m_globalStatus.nHumidity);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fDewPoint = %3.2f\n", timestamp, m_globalStatus.fDewPoint);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] converting value and setting them in m_globalStatus." << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fVoltage   = " << std::fixed << std::setprecision(2) << m_globalStatus.fVoltage << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurent    = " << std::fixed << std::setprecision(2) << m_globalStatus.fCurent << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nPower     = " << std::fixed << std::setprecision(2) << m_globalStatus.nPower << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fTemp      = " << std::fixed << std::setprecision(2) << m_globalStatus.fTemp << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nHumidity  = " << std::fixed << std::setprecision(2)<< m_globalStatus.nHumidity << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] mfDewPoint = " << std::fixed << std::setprecision(2) << m_globalStatus.fDewPoint << std::endl;
+    m_sLogFile.flush();
 #endif
 
-    
     m_globalStatus.bPort1On = m_svParsedRespForPA[upbPortStatus].at(0) == '1'? true : false;
     m_globalStatus.bPort2On = m_svParsedRespForPA[upbPortStatus].at(1) == '1'? true : false;
     m_globalStatus.bPort3On = m_svParsedRespForPA[upbPortStatus].at(2) == '1'? true : false;
     m_globalStatus.bPort4On = m_svParsedRespForPA[upbPortStatus].at(3) == '1'? true : false;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nPortStatus = %s\n", timestamp, m_svParsedRespForPA[upbPortStatus].c_str());
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bPort1On = %s\n", timestamp, m_globalStatus.bPort1On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bPort2On = %s\n", timestamp, m_globalStatus.bPort2On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bPort3On = %s\n", timestamp, m_globalStatus.bPort3On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bPort4On = %s\n", timestamp, m_globalStatus.bPort4On?"Yes":"No");
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nPortStatus = " << m_svParsedRespForPA[upbPortStatus] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bPort1On = " << (m_globalStatus.bPort1On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bPort2On = " << (m_globalStatus.bPort2On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bPort3On = " << (m_globalStatus.bPort3On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bPort4On = " << (m_globalStatus.bPort4On?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
+
     if(m_svParsedRespForPA[upbUsbStatus].size() == 6) {
         m_globalStatus.bUsbPort1On = m_svParsedRespForPA[upbUsbStatus].at(0) == '1' ? true: false;
         m_globalStatus.bUsbPort2On = m_svParsedRespForPA[upbUsbStatus].at(1) == '1' ? true: false;
@@ -318,30 +298,29 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
         m_globalStatus.bUsbPort4On = m_svParsedRespForPA[upbUsbStatus].at(3) == '1' ? true: false;
         m_globalStatus.bUsbPort5On = m_svParsedRespForPA[upbUsbStatus].at(4) == '1' ? true: false;
         m_globalStatus.bUsbPort6On = m_svParsedRespForPA[upbUsbStatus].at(5) == '1' ? true: false;
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort1On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(0));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort1On = %s\n", timestamp, m_globalStatus.bUsbPort1On?"Yes":"No");
-        
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort2On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(1));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort2On = %s\n", timestamp, m_globalStatus.bUsbPort2On?"Yes":"No");
-        
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort3On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(2));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort3On = %s\n", timestamp, m_globalStatus.bUsbPort3On?"Yes":"No");
-        
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort4On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(3));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort4On = %s\n", timestamp, m_globalStatus.bUsbPort4On?"Yes":"No");
-        
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort5On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(4));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort5On = %s\n", timestamp, m_globalStatus.bUsbPort5On?"Yes":"No");
-        
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nUsbPort6On = %c\n", timestamp, m_svParsedRespForPA[upbUsbStatus].at(5));
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bUsbPort6On = %s\n", timestamp, m_globalStatus.bUsbPort6On?"Yes":"No");
 
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort1On = " << m_svParsedRespForPA[upbUsbStatus].at(0) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort1On = " << (m_globalStatus.bUsbPort1On?"Yes":"No") << std::endl;
+
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort2On = " << m_svParsedRespForPA[upbUsbStatus].at(1) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort2On = " << (m_globalStatus.bUsbPort2On?"Yes":"No") << std::endl;
+
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort3On = " << m_svParsedRespForPA[upbUsbStatus].at(2) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort3On = " << (m_globalStatus.bUsbPort3On?"Yes":"No") << std::endl;
+
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort4On = " << m_svParsedRespForPA[upbUsbStatus].at(3) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort4On = " << (m_globalStatus.bUsbPort4On?"Yes":"No") << std::endl;
+
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort5On = " << m_svParsedRespForPA[upbUsbStatus].at(4) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort5On = " << (m_globalStatus.bUsbPort5On?"Yes":"No") << std::endl;
+
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nUsbPort6On = " << m_svParsedRespForPA[upbUsbStatus].at(5) << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bUsbPort6On = " << (m_globalStatus.bUsbPort6On?"Yes":"No") << std::endl;
+
+        m_sLogFile.flush();
 #endif
+
     }
 
 
@@ -358,21 +337,18 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
     m_globalStatus.fCurrentDew2 = std::stof(m_svParsedRespForPA[upbCurrentDew2])/480;
     m_globalStatus.fCurrentDew3 = std::stof(m_svParsedRespForPA[upbCurrentDew3])/700;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nDew1PWM = %d\n", timestamp, m_globalStatus.nDew1PWM);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nDew2PWM = %d\n", timestamp, m_globalStatus.nDew2PWM);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nDew3PWM = %d\n", timestamp, m_globalStatus.nDew3PWM);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentPort1 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort1);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentPort2 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort2);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentPort3 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort3);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentPort4 = %3.2f\n", timestamp, m_globalStatus.fCurrentPort4);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentDew1 = %3.2f\n", timestamp, m_globalStatus.fCurrentDew1);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentDew2 = %3.2f\n", timestamp, m_globalStatus.fCurrentDew2);
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] fCurrentDew3 = %3.2f\n", timestamp, m_globalStatus.fCurrentDew3);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nDew1PWM     = " <<  m_globalStatus.nDew1PWM << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nDew2PWM      = " <<  m_globalStatus.nDew2PWM << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nDew3PWM      = " <<  m_globalStatus.nDew3PWM << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentPort1 = " << std::fixed << std::setprecision(2) << m_globalStatus.fCurrentPort1 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentPort2 = " << std::fixed << std::setprecision(2) << m_globalStatus.fCurrentPort2 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentPort3 = " << std::fixed << std::setprecision(2) << m_globalStatus.fCurrentPort3 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentPort4 = " << std::fixed << std::setprecision(2) << m_globalStatus.fCurrentPort4 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentDew1  = " << std::fixed << std::setprecision(2)<< m_globalStatus.fCurrentDew1 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentDew2  = " << std::fixed << std::setprecision(2)<< m_globalStatus.fCurrentDew2 << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] fCurrentDew3  = " << std::fixed << std::setprecision(2)<< m_globalStatus.fCurrentDew3 << std::endl;
+    m_sLogFile.flush();
 #endif
 
     m_globalStatus.bOverCurrentPort1 = m_svParsedRespForPA[upbOvercurent].at(0) == '1'? true : false;
@@ -384,19 +360,16 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
     m_globalStatus.bOverCurrentDew2 = m_svParsedRespForPA[upbOvercurent].at(5) == '1'? true : false;
     m_globalStatus.bOverCurrentDew3 = m_svParsedRespForPA[upbOvercurent].at(6) == '1'? true : false;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] nOvercurrentStatus = %s\n", timestamp, m_svParsedRespForPA[upbOvercurent].c_str());
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentPort1 = %s\n", timestamp, m_globalStatus.bOverCurrentPort1?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentPort2 = %s\n", timestamp, m_globalStatus.bOverCurrentPort2?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentPort3 = %s\n", timestamp, m_globalStatus.bOverCurrentPort3?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentPort4 = %s\n", timestamp, m_globalStatus.bOverCurrentPort4?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentDew1 = %s\n", timestamp, m_globalStatus.bOverCurrentDew1?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentDew2 = %s\n", timestamp, m_globalStatus.bOverCurrentDew2?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bOverCurrentDew2 = %s\n", timestamp, m_globalStatus.bOverCurrentDew3?"Yes":"No");
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] nOvercurrentStatus = " << m_svParsedRespForPA[upbOvercurent] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentPort1 = " << (m_globalStatus.bOverCurrentPort1?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentPort2 = " << (m_globalStatus.bOverCurrentPort2?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentPort3 = " << (m_globalStatus.bOverCurrentPort3?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentPort4 = " << (m_globalStatus.bOverCurrentPort4?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentDew1 = " << (m_globalStatus.bOverCurrentDew1?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentDew2 = " << (m_globalStatus.bOverCurrentDew2?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bOverCurrentDew3 = " << (m_globalStatus.bOverCurrentDew3?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
 
     switch (m_svParsedRespForPA[upbAutodew].at(0)) {
@@ -449,67 +422,59 @@ int CPegasusUPBv2Power::getConsolidatedStatus()
             break;
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bAutoDew1 = %s\n", timestamp, m_globalStatus.bAutoDewCh1?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bAutoDew2 = %s\n", timestamp, m_globalStatus.bAutoDewCh2?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] bAutoDew3 = %s\n", timestamp, m_globalStatus.bAutoDewCh3?"Yes":"No");
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bAutoDew1 = " << (m_globalStatus.bAutoDewCh1?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bAutoDew2 = " << (m_globalStatus.bAutoDewCh2?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] bAutoDew3 = " << (m_globalStatus.bAutoDewCh3?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
+
 
     // get on boot port state and adjustable volts port settings.
-
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] Getting on boot power port status\n", timestamp);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus]  Getting on boot power port status" << std::endl;
+    m_sLogFile.flush();
 #endif
+
 
     nErr = getOnBootPowerState();
     if(nErr) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] ERROR = %d\n", timestamp, nErr);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] getOnBootPowerState Error detting on boot power port status, ERROR = " << nErr  << std::endl;
+        m_sLogFile.flush();
 #endif
         return nErr;
     }
     nErr = getOnBootUsbState();
     if(nErr) {
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] ERROR = %d\n", timestamp, nErr);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus] getOnBootUsbState Error detting on boot usb port status, ERROR = " << nErr  << std::endl;
+        m_sLogFile.flush();
 #endif
         return nErr;
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getConsolidatedStatus] All data collected\n", timestamp);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getConsolidatedStatus]  All data collected" << std::endl;
+    m_sLogFile.flush();
 #endif
+
     return nErr;
 }
 
 int CPegasusUPBv2Power::getOnBootPowerState()
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     std::vector<std::string> sParsedResp;
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     // get power state for all 4 ports
     nErr = upbCommand("PS\n", szResp, SERIAL_BUFFER_SIZE);
@@ -526,16 +491,13 @@ int CPegasusUPBv2Power::getOnBootPowerState()
         m_globalStatus.nPortAdjVolts = std::stoi(sParsedResp[2]);
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] sParsedResp[1] : %s\n", timestamp, sParsedResp[1].c_str());
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] bOnBootPort1On = %s\n", timestamp, m_globalStatus.bOnBootPort1On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] bOnBootPort2On = %s\n", timestamp, m_globalStatus.bOnBootPort2On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] bOnBootPort3On = %s\n", timestamp, m_globalStatus.bOnBootPort3On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootPowerState] bOnBootPort4On = %s\n", timestamp, m_globalStatus.bOnBootPort4On?"Yes":"No");
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] sParsedResp[1] = " << sParsedResp[1] << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootPort1On = " << (m_globalStatus.bOnBootPort1On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootPort2On = " << (m_globalStatus.bOnBootPort2On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootPort3On = " << (m_globalStatus.bOnBootPort3On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootPort4On = " << (m_globalStatus.bOnBootPort4On?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
 
     return nErr;
@@ -543,11 +505,16 @@ int CPegasusUPBv2Power::getOnBootPowerState()
 
 int CPegasusUPBv2Power::getFirmwareVersion(char *pszVersion, int nStrMaxLen)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getFirmwareVersion] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     nErr = upbCommand("PV\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -559,17 +526,27 @@ int CPegasusUPBv2Power::getFirmwareVersion(char *pszVersion, int nStrMaxLen)
 
 void CPegasusUPBv2Power::getFirmwareVersionString(std::string &sFirmware)
 {
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getFirmwareVersionString] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     sFirmware.assign(m_szFirmwareVersion);
 }
 
 
 int CPegasusUPBv2Power::getTemperature(double &dTemperature)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getTemperature] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     nErr = upbCommand("ST\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr)
@@ -587,21 +564,23 @@ int CPegasusUPBv2Power::getTemperature(double &dTemperature)
 
 int CPegasusUPBv2Power::getPosition(int &nPosition)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
 	
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
 
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getPosition] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     nErr = upbCommand("SP\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr) {
-    #if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getPosition] Error getting position : %d\n", timestamp, nErr);
-        fflush(Logfile);
-    #endif
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getPosition] Error getting position : " << nErr << std::endl;
+        m_sLogFile.flush();
+#endif
     return nErr;
     }
     // convert response
@@ -613,12 +592,17 @@ int CPegasusUPBv2Power::getPosition(int &nPosition)
 
 int CPegasusUPBv2Power::setLedStatus(int nStatus)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
 	if(!m_bIsConnected)
 		return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setLedStatus] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     switch (nStatus) {
         case ON_POWER:
@@ -629,6 +613,11 @@ int CPegasusUPBv2Power::setLedStatus(int nStatus)
             break;
 
         default:
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getPosition] Error nStatus : " << nStatus << std::endl;
+            m_sLogFile.flush();
+#endif
+            return ERR_CMDFAILED;
             break;
     }
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
@@ -638,10 +627,15 @@ int CPegasusUPBv2Power::setLedStatus(int nStatus)
 
 int CPegasusUPBv2Power::getDeviceType(int &nDevice)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getDeviceType] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     nErr = getStatus();
     nDevice = m_globalStatus.nDeviceType;
@@ -651,6 +645,11 @@ int CPegasusUPBv2Power::getDeviceType(int &nDevice)
 
 void CPegasusUPBv2Power::getDeviceTypeString(std::string &sDeviceType)
 {
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getDeviceTypeString] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     if( m_globalStatus.nDeviceType== UPBv2_POWER)
         sDeviceType = "Ultimate Powerbox V2";
     else
@@ -745,9 +744,17 @@ bool CPegasusUPBv2Power::getPortOn(const int &nPortNumber)
 
 int CPegasusUPBv2Power::setPortOn(const int &nPortNumber, const bool &bEnabled)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setPortOn] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     switch(nPortNumber) {
         case DC1 :
@@ -767,17 +774,19 @@ int CPegasusUPBv2Power::setPortOn(const int &nPortNumber, const bool &bEnabled)
             m_globalStatus.bPort4On = bEnabled;
             break;
         case DEW1 : // Dew Heater A
-            setDewHeaterPWM(DewHeaterA, bEnabled?m_nPWMA:0);
+            nErr = setDewHeaterPWM(DewHeaterA, bEnabled?m_nPWMA:0);
             m_bPWMA_On = bEnabled;
+            return nErr;
             break;
         case DEW2 : // Dew Heater B
-            setDewHeaterPWM(DewHeaterB, bEnabled?m_nPWMB:0);
+            nErr = setDewHeaterPWM(DewHeaterB, bEnabled?m_nPWMB:0);
             m_bPWMB_On = bEnabled;
+            return nErr;
             break;
         case DEW3 : // Dew Heater C
-            setDewHeaterPWM(DewHeaterC, bEnabled?m_nPWMC:0);
+            nErr = setDewHeaterPWM(DewHeaterC, bEnabled?m_nPWMC:0);
             m_bPWMC_On = bEnabled;
-            break;
+            return nErr;
             break;
         case USB1 : // usb 1
             setUsbPortState(1,bEnabled);
@@ -798,11 +807,27 @@ int CPegasusUPBv2Power::setPortOn(const int &nPortNumber, const bool &bEnabled)
             setUsbPortState(6,bEnabled);
             break;
         default:
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setPortOn] Error nPortNumber : " << nPortNumber << std::endl;
+            m_sLogFile.flush();
+#endif
             return ERR_CMDFAILED;
             break;
     }
 
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setPortOn] calling upbCommand : " << szCmd << std::endl;
+    m_sLogFile.flush();
+#endif
+
+
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setPortOn] calling upbCommand nErr : " << nErr << std::endl;
+    m_sLogFile.flush();
+#endif
+
 
     return nErr;
 }
@@ -865,11 +890,19 @@ bool CPegasusUPBv2Power::getOnBootPortOn(const int &nPortNumber)
 
 int CPegasusUPBv2Power::setOnBootPortOn(const int &nPortNumber, const bool &bEnable)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
     std::string sPorts;
-    
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setOnBootPortOn] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     switch(nPortNumber) {
         case DC1 :
             m_globalStatus.bOnBootPort1On = bEnable;
@@ -954,9 +987,17 @@ bool CPegasusUPBv2Power::isOverCurrentDewHeater(const int &nPortNumber)
 
 int CPegasusUPBv2Power::setUsbPortState(const int nPortID, const bool &bEnable)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setUsbPortState] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "U%d:%s\n", nPortID, bEnable?"1":"0");
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
@@ -1042,10 +1083,18 @@ bool CPegasusUPBv2Power::getOnBootUsbPortOn(const int &nPortNumber)
 
 int CPegasusUPBv2Power::setOnBootUsbPortOn(const int &nPortNumber, const bool &bEnable)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
     std::string sPorts;
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setOnBootUsbPortOn] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     switch(nPortNumber) {
         case 1 :
@@ -1089,9 +1138,17 @@ int CPegasusUPBv2Power::setOnBootUsbPortOn(const int &nPortNumber, const bool &b
 
 int CPegasusUPBv2Power::getOnBootUsbState(void)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     std::vector<std::string> sParsedResp;
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootUsbState] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     nErr = upbCommand("US:99\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr) {
@@ -1108,17 +1165,14 @@ int CPegasusUPBv2Power::getOnBootUsbState(void)
         m_globalStatus.bOnBootUsbPort6On = sParsedResp[0].at(5) == '1'? true : false;
     }
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort1On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort1On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort2On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort2On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort3On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort3On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort4On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort4On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort5On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort5On?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::getOnBootUsbState] bOnBootUsbPort6On = %s\n", timestamp, m_globalStatus.bOnBootUsbPort6On?"Yes":"No");
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort1On = " << (m_globalStatus.bOnBootUsbPort1On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort2On = " << (m_globalStatus.bOnBootUsbPort2On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort3On = " << (m_globalStatus.bOnBootUsbPort3On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort4On = " << (m_globalStatus.bOnBootUsbPort4On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort5On = " << (m_globalStatus.bOnBootUsbPort5On?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getOnBootPowerState] bOnBootUsbPort6On = " << (m_globalStatus.bOnBootUsbPort6On?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
 
     return nErr;
@@ -1126,9 +1180,17 @@ int CPegasusUPBv2Power::getOnBootUsbState(void)
 
 int CPegasusUPBv2Power::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setDewHeaterPWM] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     switch(nDewHeater) {
         case DewHeaterA:
@@ -1144,6 +1206,10 @@ int CPegasusUPBv2Power::setDewHeaterPWM(const int &nDewHeater, const int &nPWM)
             m_globalStatus.nDew2PWM = nPWM;
             break;
         default:
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setDewHeaterPWM] Error nDewHeater : " << nDewHeater << std::endl;
+            m_sLogFile.flush();
+#endif
             return ERR_CMDFAILED;
             break;
     }
@@ -1190,7 +1256,7 @@ float CPegasusUPBv2Power::getDewHeaterCurrent(const int &nDewHeater)
 
 int CPegasusUPBv2Power::setDewHeaterPWMVal(const int &nDewHeater, const int &nPWM)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     bool bOn = false;
 
     switch(nDewHeater) {
@@ -1215,12 +1281,39 @@ int CPegasusUPBv2Power::setDewHeaterPWMVal(const int &nDewHeater, const int &nPW
     return nErr;
 }
 
+void CPegasusUPBv2Power::setDewHeaterOnVal(const int &nDewHeater, const bool bOn)
+{
+    int nErr = PLUGIN_OK;
+
+    switch(nDewHeater) {
+        case DewHeaterA:
+            m_bPWMA_On = bOn;
+            break;
+        case DewHeaterB:
+            m_bPWMB_On = bOn;
+            break;
+        case DewHeaterC:
+            m_bPWMC_On = bOn;
+            break;
+        default:
+            break;
+    }
+}
+
 
 int CPegasusUPBv2Power::getAdjPortVolts(int &nVolts)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     std::vector<std::string> sParsedResp;
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getAdjPortVolts] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     nErr = upbCommand("P8\n", szResp, SERIAL_BUFFER_SIZE);
     if(nErr) {
@@ -1238,9 +1331,17 @@ int CPegasusUPBv2Power::getAdjPortVolts(int &nVolts)
 
 int CPegasusUPBv2Power::setAdjPortVolts(int nVolts)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setAdjPortVolts] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "P8:%d\n", nVolts);
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
@@ -1250,11 +1351,19 @@ int CPegasusUPBv2Power::setAdjPortVolts(int nVolts)
 
 int CPegasusUPBv2Power::setAutoDewOn(const int nPWMPort,const bool &bOn)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
     int nAutoDewVal;
-    
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setAutoDewOn] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     switch(nPWMPort) {
         case DewHeaterA:
             m_globalStatus.bAutoDewCh1 = bOn;
@@ -1298,14 +1407,12 @@ int CPegasusUPBv2Power::setAutoDewOn(const int nPWMPort,const bool &bOn)
     if(nErr)
         return nErr;
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::setAutoDewOn]  nPWMPort %d : %s\n", timestamp, nPWMPort, bOn?"Yes":"No");
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::setAutoDewOn]  nAutoDewVal : %d \n", timestamp, nAutoDewVal);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setAutoDewOn] nPWMPort " << nPWMPort << " : " << (bOn?"Yes":"No") << std::endl;
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setAutoDewOn] nAutoDewVal : " << nAutoDewVal << std::endl;
+    m_sLogFile.flush();
 #endif
+
     getConsolidatedStatus();
     return nErr;
 }
@@ -1314,6 +1421,15 @@ int CPegasusUPBv2Power::setAutoDewOn(const int nPWMPort,const bool &bOn)
 bool CPegasusUPBv2Power::isAutoDewOn(const int nPWMPort)
 {
     bool bDewOn = false;
+
+    if(!m_bIsConnected)
+        return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [isAutoDewOn] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
+
     switch(nPWMPort) {
         case DewHeaterA:
             bDewOn = m_globalStatus.bAutoDewCh1;
@@ -1327,24 +1443,28 @@ bool CPegasusUPBv2Power::isAutoDewOn(const int nPWMPort)
             bDewOn = m_globalStatus.bAutoDewCh3;
             break;
     }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    fprintf(Logfile, "[%s] [CPegasusUPBv2Power::isAutoDewOn]  for port %d : %s\n", timestamp, nPWMPort,  bDewOn?"Yes":"No");
-    fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [isAutoDewOn] Port " << nPWMPort << " : " << (bDewOn?"Yes":"No") << std::endl;
+    m_sLogFile.flush();
 #endif
+
     return bDewOn;
 }
 
 int CPegasusUPBv2Power::getAutoDewAggressivness(int &nLevel)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     std::vector<std::string> sParsedResp;
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getAutoDewAggressivness] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
 
     m_nAutoDewAgressiveness = 210; // default value
@@ -1357,13 +1477,9 @@ int CPegasusUPBv2Power::getAutoDewAggressivness(int &nLevel)
         m_nAutoDewAgressiveness = std::stoi(sParsedResp[1]);
     }
 
-#ifdef PLUGIN_DEBUG_UPBv2_POWER
-    ltime = time(NULL);
-    timestamp = asctime(localtime(&ltime));
-    timestamp[strlen(timestamp) - 1] = 0;
-    //fprintf(Logfile, "[%s] [CPegasusPPBA::getAutoDewAggressivness] sParsedResp[1] : %s\n", timestamp, sParsedResp[1].c_str());
-    fprintf(Logfile, "[%s] [CPegasusPPBA::getAutoDewAggressivness] m_nAutoDewAgressiveness : %d\n", timestamp, m_nAutoDewAgressiveness);
-    fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [getAutoDewAggressivness] m_nAutoDewAgressiveness " << m_nAutoDewAgressiveness << std::endl;
+    m_sLogFile.flush();
 #endif
 
     nLevel = m_nAutoDewAgressiveness;
@@ -1372,12 +1488,17 @@ int CPegasusUPBv2Power::getAutoDewAggressivness(int &nLevel)
 
 int CPegasusUPBv2Power::setAutoDewAggressivness(int nLevel)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szCmd[SERIAL_BUFFER_SIZE];
     char szResp[SERIAL_BUFFER_SIZE];
 
     if(!m_bIsConnected)
         return ERR_COMMNOLINK;
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [setAutoDewAggressivness] Called." << std::endl;
+    m_sLogFile.flush();
+#endif
 
     snprintf(szCmd, SERIAL_BUFFER_SIZE, "PD:%d\n", nLevel);
     nErr = upbCommand(szCmd, szResp, SERIAL_BUFFER_SIZE);
@@ -1403,7 +1524,7 @@ int CPegasusUPBv2Power::getPortCount()
 
 int CPegasusUPBv2Power::upbCommand(const char *pszszCmd, char *pszResult, unsigned long nResultMaxLen, int nTimeout)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     char szResp[SERIAL_BUFFER_SIZE];
     unsigned long  ulBytesWrite;
 	
@@ -1411,13 +1532,12 @@ int CPegasusUPBv2Power::upbCommand(const char *pszszCmd, char *pszResult, unsign
 		return ERR_COMMNOLINK;
 
     m_pSerx->purgeTxRx();
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] Sending %s\n", timestamp, pszszCmd);
-	fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [upbCommand] Sending : " << pszszCmd << std::endl;
+    m_sLogFile.flush();
 #endif
+
     nErr = m_pSerx->writeFile((void *)pszszCmd, strlen(pszszCmd), ulBytesWrite);
     m_pSerx->flushTx();
 
@@ -1432,22 +1552,20 @@ int CPegasusUPBv2Power::upbCommand(const char *pszszCmd, char *pszResult, unsign
         if(nErr){
             return nErr;
         }
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-		ltime = time(NULL);
-		timestamp = asctime(localtime(&ltime));
-		timestamp[strlen(timestamp) - 1] = 0;
-		fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] response \"%s\"\n", timestamp, szResp);
-		fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [upbCommand] response : \"" << szResp <<"\"" << std::endl;
+        m_sLogFile.flush();
 #endif
+
         // printf("Got response : %s\n",resp);
         strncpy(pszResult, szResp, nResultMaxLen);
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 2
-		ltime = time(NULL);
-		timestamp = asctime(localtime(&ltime));
-		timestamp[strlen(timestamp) - 1] = 0;
-		fprintf(Logfile, "[%s] [CPegasusUPBv2Power::upbCommand] response copied to pszResult : \"%s\"\n", timestamp, pszResult);
-		fflush(Logfile);
+
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [upbCommand] response copied to pszResult : \"" << pszResult <<"\"" << std::endl;
+        m_sLogFile.flush();
 #endif
+
     }
     return nErr;
 }
@@ -1455,34 +1573,34 @@ int CPegasusUPBv2Power::upbCommand(const char *pszszCmd, char *pszResult, unsign
 
 int CPegasusUPBv2Power::readResponse(char *szRespBuffer, unsigned long nBufferLen, int nTimeout)
 {
-    int nErr = PLUGIN_OK_UPBv2_POWER;
+    int nErr = PLUGIN_OK;
     unsigned long ulBytesRead = 0;
     unsigned long ulTotalBytesRead = 0;
     char *pszBufPtr;
     int nBytesWaiting = 0 ;
     int nbTimeouts = 0;
 
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] called" << std::endl;
+    m_sLogFile.flush();
+#endif
+
     memset(szRespBuffer, 0, (size_t) nBufferLen);
     pszBufPtr = szRespBuffer;
 
     do {
         nErr = m_pSerx->bytesWaitingRx(nBytesWaiting);
-#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 3
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] nBytesWaiting = %d\n", timestamp, nBytesWaiting);
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] nBytesWaiting nErr = %d\n", timestamp, nErr);
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] nBytesWaiting : " << nBytesWaiting << std::endl;
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] nBytesWaiting nErr : " << nErr << std::endl;
+        m_sLogFile.flush();
 #endif
+
         if(!nBytesWaiting) {
             if(nbTimeouts++ >= NB_RX_WAIT) {
 #if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
-                ltime = time(NULL);
-                timestamp = asctime(localtime(&ltime));
-                timestamp[strlen(timestamp) - 1] = 0;
-                fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] bytesWaitingRx timeout, no data for %d loops\n", timestamp, NB_RX_WAIT);
-                fflush(Logfile);
+                m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] bytesWaitingRx timeout, no data for " << NB_RX_WAIT  << " loops" << std::endl;
+                m_sLogFile.flush();
 #endif
                 nErr = ERR_RXTIMEOUT;
                 break;
@@ -1499,24 +1617,19 @@ int CPegasusUPBv2Power::readResponse(char *szRespBuffer, unsigned long nBufferLe
         }
         if(nErr) {
 #if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
-            ltime = time(NULL);
-            timestamp = asctime(localtime(&ltime));
-            timestamp[strlen(timestamp) - 1] = 0;
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile error.\n", timestamp);
-            fflush(Logfile);
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] readFile error : " << nErr << std::endl;
+            m_sLogFile.flush();
 #endif
+
             return nErr;
         }
 
         if (ulBytesRead != nBytesWaiting) { // timeout
 #if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
-            ltime = time(NULL);
-            timestamp = asctime(localtime(&ltime));
-            timestamp[strlen(timestamp) - 1] = 0;
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile Timeout Error\n", timestamp);
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile nBytesWaiting = %d\n", timestamp, nBytesWaiting);
-            fprintf(Logfile, "[%s] [CPegasusUPBv2Power::readResponse] readFile ulBytesRead = %lu\n", timestamp, ulBytesRead);
-            fflush(Logfile);
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] readFile Timeout Error" << std::endl;
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] readFile nBytesWaiting  : " << nBytesWaiting << std::endl;
+            m_sLogFile << "["<<getTimeStamp()<<"]"<< " [readResponse] readFile ulBytesRead    : " << ulBytesRead << std::endl;
+            m_sLogFile.flush();
 #endif
         }
 
@@ -1540,24 +1653,19 @@ void CPegasusUPBv2Power::parseResp(char *pszResp, std::vector<std::string>  &svP
     std::vector<std::string> svSeglist;
     std::stringstream ssTmp(pszResp);
 
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 3
-	ltime = time(NULL);
-	timestamp = asctime(localtime(&ltime));
-	timestamp[strlen(timestamp) - 1] = 0;
-	fprintf(Logfile, "[%s] [CPegasusUPBv2Power::parseResp] parsing \"%s\"\n", timestamp, pszResp);
-	fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [parseResp] called" << std::endl;
+    m_sLogFile.flush();
 #endif
+
 	svParsedResp.clear();
     // split the string into vector elements
     while(std::getline(ssTmp, sSegment, ':'))
     {
         svSeglist.push_back(sSegment);
-#if defined PLUGIN_DEBUG_UPBv2_POWER && PLUGIN_DEBUG_UPBv2_POWER >= 3
-        ltime = time(NULL);
-        timestamp = asctime(localtime(&ltime));
-        timestamp[strlen(timestamp) - 1] = 0;
-        fprintf(Logfile, "[%s] [CPegasusUPBv2Power::parseResp] sSegment : %s\n", timestamp, sSegment.c_str());
-        fflush(Logfile);
+#if defined PLUGIN_DEBUG && PLUGIN_DEBUG >= 2
+        m_sLogFile << "["<<getTimeStamp()<<"]"<< " [parseResp] sSegment : " << sSegment << std::endl;
+        m_sLogFile.flush();
 #endif
     }
 
@@ -1565,3 +1673,23 @@ void CPegasusUPBv2Power::parseResp(char *pszResp, std::vector<std::string>  &svP
 
 
 }
+
+
+#ifdef PLUGIN_DEBUG
+const std::string CPegasusUPBv2Power::getTimeStamp()
+{
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+
+void CPegasusUPBv2Power::log(std::string sText)
+{
+    m_sLogFile << "["<<getTimeStamp()<<"]"<< " [log] " << sText << std::endl;
+    m_sLogFile.flush();
+}
+#endif
