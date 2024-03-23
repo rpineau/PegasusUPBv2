@@ -61,7 +61,7 @@ class TickCountInterface;
 
 Use this example to write an X2Focuser driver.
 */
-class X2Focuser : public FocuserDriverInterface, public SerialPortParams2Interface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public FocuserTemperatureInterface, public MultiConnectionDeviceInterface
+class __attribute__((weak,visibility("default"))) X2Focuser : public FocuserDriverInterface, public SerialPortParams2Interface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public FocuserTemperatureInterface, public MultiConnectionDeviceInterface
 {
 public:
 	X2Focuser(const char                        *pszDisplayName,
