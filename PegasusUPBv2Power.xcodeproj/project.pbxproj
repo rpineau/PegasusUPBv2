@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9306A75C1EDE325800A1E90B /* pegasus_upbv2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9306A75A1EDE325800A1E90B /* pegasus_upbv2.cpp */; };
+		9306A75C1EDE325800A1E90B /* pegasus_upbv2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9306A75A1EDE325800A1E90B /* pegasus_upbv2.cpp */; settings = {COMPILER_FLAGS = "-fvisibility=default"; }; };
 		9306A75D1EDE325800A1E90B /* pegasus_upbv2.h in Headers */ = {isa = PBXBuildFile; fileRef = 9306A75B1EDE325800A1E90B /* pegasus_upbv2.h */; };
 		933A04321EE0BD5D00D06551 /* StopWatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 933A04311EE0BD5D00D06551 /* StopWatch.h */; };
-		933E14271EDCA6B90044D947 /* x2powercontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 933E14231EDCA6B90044D947 /* x2powercontrol.cpp */; };
+		933E14271EDCA6B90044D947 /* x2powercontrol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 933E14231EDCA6B90044D947 /* x2powercontrol.cpp */; settings = {COMPILER_FLAGS = "-fvisibility=default"; }; };
 		933E14281EDCA6B90044D947 /* x2powercontrol.h in Headers */ = {isa = PBXBuildFile; fileRef = 933E14241EDCA6B90044D947 /* x2powercontrol.h */; };
 		939F4F2D1EE1EE6300E26EED /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F4F2C1EE1EE6300E26EED /* IOKit.framework */; };
 		939F4F2F1EE1EE7200E26EED /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939F4F2E1EE1EE7200E26EED /* CoreFoundation.framework */; };
-		93E3C59826BDDD1300FD3D20 /* pegasus_upbv2Focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */; };
-		93E3C59926BDDD1300FD3D20 /* x2focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */; };
+		93E3C59826BDDD1300FD3D20 /* pegasus_upbv2Focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59426BDDD1200FD3D20 /* pegasus_upbv2Focuser.cpp */; settings = {COMPILER_FLAGS = "-fvisibility=default"; }; };
+		93E3C59926BDDD1300FD3D20 /* x2focuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C59526BDDD1200FD3D20 /* x2focuser.cpp */; settings = {COMPILER_FLAGS = "-fvisibility=default"; }; };
 		93E3C59A26BDDD1300FD3D20 /* pegasus_upbv2Focuser.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C59626BDDD1200FD3D20 /* pegasus_upbv2Focuser.h */; };
 		93E3C59B26BDDD1300FD3D20 /* x2focuser.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C59726BDDD1300FD3D20 /* x2focuser.h */; };
 		93E3C5AE26BE248300FD3D20 /* powerMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E3C5AC26BE248300FD3D20 /* powerMain.h */; };
-		93E3C5AF26BE248300FD3D20 /* powerMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C5AD26BE248300FD3D20 /* powerMain.cpp */; };
+		93E3C5AF26BE248300FD3D20 /* powerMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 93E3C5AD26BE248300FD3D20 /* powerMain.cpp */; settings = {COMPILER_FLAGS = "-fvisibility=default"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -188,7 +188,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -212,7 +212,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -246,7 +246,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -270,7 +270,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -295,7 +295,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -316,7 +316,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;

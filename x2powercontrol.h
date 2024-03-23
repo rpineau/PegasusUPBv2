@@ -65,7 +65,7 @@
 #endif
 
 
- class X2PowerControl : public PowerControlDriverInterface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public CircuitLabelsInterface, public SetCircuitLabelsInterface, public SerialPortParams2Interface, public MultiConnectionDeviceInterface
+ class __attribute__((weak,visibility("default"))) X2PowerControl : public PowerControlDriverInterface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public CircuitLabelsInterface, public SetCircuitLabelsInterface, public SerialPortParams2Interface, public MultiConnectionDeviceInterface
 {
 public:
 	X2PowerControl( const char* pszDisplayName,

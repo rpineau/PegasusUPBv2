@@ -925,7 +925,7 @@ int CPegasusUPBv2Power::setOnBootPortOn(const int &nPortNumber, const bool &bEna
             break;
     }
 
-    sPorts.empty();
+    sPorts.clear();
     sPorts += m_globalStatus.bOnBootPort1On? "1" : "0";
     sPorts += m_globalStatus.bOnBootPort2On? "1" : "0";
     sPorts += m_globalStatus.bOnBootPort3On? "1" : "0";
@@ -1122,7 +1122,7 @@ int CPegasusUPBv2Power::setOnBootUsbPortOn(const int &nPortNumber, const bool &b
             break;
     }
 
-    sPorts.empty();
+    sPorts.clear();
     sPorts += m_globalStatus.bOnBootUsbPort1On? "1" : "0";
     sPorts += m_globalStatus.bOnBootUsbPort2On? "1" : "0";
     sPorts += m_globalStatus.bOnBootUsbPort3On? "1" : "0";
