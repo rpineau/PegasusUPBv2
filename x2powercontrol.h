@@ -64,8 +64,13 @@
 #define DEF_PORT_NAME_POWER     "/dev/ttyUSB0"
 #endif
 
+#if defined(WIN32)
+#define __CLASS_ATTRIBUTE__(x)
+#else
+#define __CLASS_ATTRIBUTE__(x) __attribute__(x)
+#endif
 
- class __attribute__((weak,visibility("default"))) X2PowerControl : public PowerControlDriverInterface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public CircuitLabelsInterface, public SetCircuitLabelsInterface, public SerialPortParams2Interface, public MultiConnectionDeviceInterface
+class __CLASS_ATTRIBUTE__((weak,visibility("default"))) X2PowerControl : public PowerControlDriverInterface, public ModalSettingsDialogInterface, public X2GUIEventInterface, public CircuitLabelsInterface, public SetCircuitLabelsInterface, public SerialPortParams2Interface, public MultiConnectionDeviceInterface
 {
 public:
 	X2PowerControl( const char* pszDisplayName,
